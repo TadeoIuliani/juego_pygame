@@ -13,10 +13,7 @@ pygame.init()
 
 reloj = pygame.time.Clock()
 
-path_caja = caja["imagen"]
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
-
-
 
 pygame.display.set_caption("Juego Practica")
 
@@ -25,6 +22,7 @@ fondo = pygame.transform.scale(fondo, (ANCHO, ALTO))
 
 player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
 
+path_caja = caja["imagen"]
 piso = Piso("images\pisos\piso.png", (ANCHO, 80), (0, 525))
 plataforma_1 = Piso("images\pisos\piso.png", (600, 60), (120, 432))
 plataforma_2 = Piso("images\pisos\piso.png", (450, 60), (280, 330))
@@ -33,8 +31,8 @@ plataforma_4 = Piso("images\pisos\piso.png", (380, 60), (300, 120))
 caja = Piso(path_caja, (80, 80), (120, 354))
 caja_2 = Piso(path_caja, (80, 80), (640, 250))
 caja_3 = Piso(path_caja, (80, 80), (120, 145))
-plataformas = [piso, plataforma_1, plataforma_2, caja, caja_2, plataforma_3, caja_3, plataforma_4]
 cajas = [caja, caja_2, caja_3]
+plataformas = [piso, plataforma_1, plataforma_2, caja, caja_2, plataforma_3, caja_3, plataforma_4]
 
 fruta = Item(imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM)
 
@@ -43,7 +41,7 @@ generador_sapos = GenearadorEnemigos(r"images\sapos\0.png", (40, 30), 5, animaci
 lista_enemigos = generador_cangrejos.generar_enemigos(Enemigo, 2)
 lista_sapos = generador_sapos.generar_enemigos(Sapo, 3)
 vidas = 3
-Fuente = pygame.font.SysFont("Arial", 30)
+Fuente = pygame.font.SysFont("Segoe Print", 30)
 puntuacion = 0
 lista_frutas = [fruta]
 laser = None
@@ -181,15 +179,13 @@ while on:
             else:
                 player.esta_saltando = True
 
-        if player.lados["bottom"].colliderect(caja.lados["top"]):
-            player.esta_saltando = False
-
+        collision_player_caja(player, cajas)
         for fruta in lista_frutas:
-            if colision_fruta_plataforma(fruta, piso):
+            if colision_fruta_plataforma(fruta, plataformas):
                 fruta.esta_cayendo = False
 
         for fruta in lista_frutas:
-            if colision_fruta_player(fruta, player):
+            if colision_fruta_otro_objeto(fruta, player):
                 lista_frutas.remove(fruta)
                 puntuacion += 200
         
@@ -272,6 +268,7 @@ while on:
 
         for i in range(len(lista_enemigos)):
             lista_enemigos[i].update(pantalla)
+            
         player.update(pantalla)
 
         if bala_viva:

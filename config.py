@@ -59,18 +59,18 @@ def crear_objetos_random(clase, animaciones, imagen, tamaño, cantidad):
     return lista
 
 
-def colision_fruta_player(fruta, player):
-    if player.rect.colliderect(fruta.rect):
+def colision_fruta_otro_objeto(fruta, objeto):
+    if objeto.rect.colliderect(fruta.rect):
         return True
     else:
         return False
 
 
-def colision_fruta_plataforma(fruta, plataforma):
-    if fruta.rect.colliderect(plataforma.rect):
-        return True
-    else:
-        return False
+def colision_fruta_plataforma(fruta, plataformas):
+    for piso in plataformas:
+        if fruta.rect.colliderect(piso.rect):
+            return True
+    return False
 
 class GenearadorEnemigos():
     def __init__(self, image, tamaño, speed, animaciones) -> None:
@@ -85,4 +85,43 @@ class GenearadorEnemigos():
             object = clase(self.image, self.tamaño, self.speed, self.animaciones)
             lista.append(object)
         return lista
+
+def collision_player_plataformas(player, lista_plataformas):
+    for plataforma in lista_plataformas:
+        if player.lados["bottom"].colliderect(plataforma.lados["top"]):
+            player.esta_saltando = False
+            break
+        else:
+            player.esta_saltando = True
+        
+
+def collision_player_caja(player, lista_caja):
+    for caja in lista_caja:
+        if player.lados["bottom"].colliderect(caja.lados["top"]):
+            player.esta_saltando = False
+
+def collision_enemigos_plataformas(enemigos, plataformas):
+    for enemigo in enemigos:
+        for piso in plataformas:
+            if enemigo.lados["bottom"].colliderect(piso.lados["top"]):
+                enemigo.esta_cayendo = False
+                enemigo.lados["bottom"].top = piso.lados["top"].top + 4
+                if enemigo.rect.right >= piso.rect.right:
+                    enemigo.estado = "izquierda"
+                elif enemigo.rect.left <= piso.rect.left:
+                    enemigo.estado = "derecha"
+            # else:
+            #     enemigo.esta_cayendo = True
+
+def collision_sapo_plataformas(sapos, plataformas):
+    for sapo in sapos:
+        for plataforma in plataformas:
+            if sapo.lados["bottom"].colliderect(plataforma.lados["top"]):
+                sapo.esta_saltando = False
+                if sapo.rect.right >= plataforma.rect.right:
+                    sapo.estado = "izquierda"
+                elif sapo.rect.left <= plataforma.rect.left:
+                    sapo.estado = "derecha"
+
+
 
