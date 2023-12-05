@@ -24,13 +24,12 @@ plataforma_1 = Piso("images\pisos\piso.png", (600, 60), (120, 432))
 plataforma_2 = Piso("images\pisos\piso.png", (450, 60), (280, 330))
 plataforma_3 = Piso("images\pisos\piso.png", (400, 60), (120, 220))
 plataforma_4 = Piso("images\pisos\piso.png", (380, 60), (300, 120))
-
 caja = Piso(path_caja, (80, 80), (120, 354))
 caja_2 = Piso(path_caja, (80, 80), (640, 250))
 caja_3 = Piso(path_caja, (80, 80), (120, 145))
 cajas = [caja, caja_2, caja_3]
 plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
-
+Fuente = pygame.font.SysFont("Segoe Print", 30)
 juego = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
 
 while True:

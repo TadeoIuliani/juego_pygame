@@ -33,13 +33,21 @@ class Nivel:
         self.cronometro = 0
         self.gano = None
         self.fin_juego = False
+        self.pause = False
+        pygame.mixer.init()
+        self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
+        self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
+        self.sonido_item = pygame.mixer.Sound(r"sounds\agarras_item.mp3")
+        self.reloj = pygame.time.Clock()
+
 
 
     def play(self, lista_eventos):
-        
+        self.reloj.tick(FPS)
         self.leer_inputs(lista_eventos)
+        self.pausa()
         self.collisiones()
-        self.actualizar_pantalla()
+        self.actualizar_pantalla()  
 
 
     def leer_inputs(self, lista_eventos):
@@ -49,17 +57,21 @@ class Nivel:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_x:
-                    if self.bala_viva == False:
+                    if self.bala_viva == False and self.pause == False:
                         self.laser = Laser("images\disparo.png", self.player.rect.midright)
+                        self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_z:
-                    if self.bala_viva == False:
+                    if self.bala_viva == False and self.pause == False:
                         self.laser = Laser("images\disparo.png", self.player.rect.midright, False)
+                        self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
                     self.rectangulos_prog = not self.rectangulos_prog
                 elif event.key == pygame.K_r:
                     self.reset()
+                elif event.key == pygame.K_p:
+                    self.pause = not self.pause
 
         teclas_presionadas = pygame.key.get_pressed()
         if teclas_presionadas[pygame.K_LEFT] and self.player.rect.left > ANCHO / ANCHO + 7:
@@ -86,6 +98,7 @@ class Nivel:
 
             for fruta in self.lista_frutas:
                 if colision_fruta_otro_objeto(fruta, self.player):
+                    self.sonido_item.play()
                     self.lista_frutas.remove(fruta)
                     self.puntuacion += 200
 
@@ -110,11 +123,13 @@ class Nivel:
         if self.bala_viva:
             for enemigo in self.lista_enemigos:
                 if enemigo.rect.colliderect(self.laser.rect):
+                    self.sonido_muerte.play()
                     self.lista_enemigos.remove(enemigo)
                     self.puntuacion += 100
                     self.bala_viva = False
             for sapo in self.lista_sapos:
                 if sapo.rect.colliderect(self.laser.rect):
+                    self.sonido_muerte.play()
                     self.lista_sapos.remove(sapo)
                     self.puntuacion += 100
                     self.bala_viva = False
@@ -161,18 +176,6 @@ class Nivel:
 
             for key in self.player.lados:
                 pygame.draw.rect(self.pantalla, AZUL, self.player.lados[key], 2)
-            # for key in plataforma_1.lados:
-            #     pygame.draw.rect(self.pantalla, ROJO, plataforma_1.lados[key], 2)
-            # for key in plataforma_2.lados:
-            #     pygame.draw.rect(self.pantalla, ROJO, plataforma_2.lados[key], 2)
-            # for key in plataforma_3.lados:
-            #     pygame.draw.rect(self.pantalla, ROJO, plataforma_3.lados[key], 2)
-            # for key in plataforma_4.lados:
-            #     pygame.draw.rect(self.pantalla, ROJO, plataforma_4.lados[key], 2)
-            # for key in piso.lados:
-            #     pygame.draw.rect(self.pantalla, ROJO, piso.lados[key], 2)
-            # pygame.draw.line(self.pantalla, ROJO, plataforma_4.rect.midleft,(plataforma_4.rect.left, 40) , 2)
-            # pygame.draw.line(self.pantalla, ROJO, plataforma_4.rect.midright,(plataforma_4.rect.right, 40) , 2)
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
@@ -202,6 +205,21 @@ class Nivel:
         self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
 
+
+    def pausa(self):    
+        if self.pause:
+            self.player.velocidad = 0
+            for enemigo in self.lista_enemigos:
+                enemigo.velocidad = 0
+            for sapo in self.lista_sapos:
+                sapo.velocidad = 0
+        else:
+            self.player.velocidad = 7
+            for enemigo in self.lista_enemigos:
+                enemigo.velocidad = 7
+            for sapo in self.lista_sapos:
+                sapo.velocidad = 5
+
     def get_estado_juego(self):
         if self.fin_juego:
             return True
@@ -214,3 +232,6 @@ class Nivel:
         else:
             return False
         
+    def get_puntuacion(self):
+        return self.puntuacion
+    
