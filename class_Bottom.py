@@ -13,13 +13,23 @@ class Bottom():
     def draw(self, pantalla):
         self.pos = pygame.mouse.get_pos()
         
-        if self.rect.collidepoint(self.pos):
-            if pygame.mouse.get_pressed()[0] == 1 and self.toco == False:
-                self.toco = True
-                self.retorno = True
+        # if self.rect.collidepoint(self.pos):
+        #     if pygame.mouse.get_pressed()[0] == 1 and self.toco == False:
+        #         self.toco = True
+        #         self.retorno = True
             
-            if pygame.mouse.get_pressed()[0] == 0:
-                self.toco = False
+        #     if pygame.mouse.get_pressed()[0] == 0:
+        #         self.toco = False
         pantalla.blit(self.image, self.rect)
         
         return self.retorno
+    
+    def is_clicked(self):
+        self.pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(self.pos):
+            if pygame.mouse.get_pressed()[0] == 1:
+                return True
+            
+        else:
+            return False

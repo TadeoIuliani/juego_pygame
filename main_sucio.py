@@ -32,14 +32,26 @@ plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
 Fuente = pygame.font.SysFont("Segoe Print", 30)
 juego = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
 
+boton_inicio = Bottom(r"images\BOTONES\play.png", 350, 200, (200, 80))
+boton_ranking = Bottom(r"images\BOTONES\ranking.png", 350, 400, (200, 80))
+mostrar = False
 while True:
+    mensaje = None
     reloj.tick(27)  
     eventos = pygame.event.get()
     for event in eventos:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    juego.play(eventos)
+    boton_inicio.draw(pantalla)
+    boton_ranking.draw(pantalla)
+    if boton_inicio.is_clicked() == True:
+        mensaje = "toco"
+        mostrar = True
+
+    if mostrar:
+        print(mensaje)
+        mostrar = not mostrar
     pygame.display.flip()
 
 

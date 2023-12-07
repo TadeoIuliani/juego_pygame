@@ -15,6 +15,7 @@ ROSA = (217, 74, 177)
 AMARILLO = (255, 255, 0)
 CELESTE = (0, 255, 255)
 
+COLOR_MENU = (9, 138, 211)
 color_random = []
 color_random.append(ROJO)
 color_random.append(VERDE)

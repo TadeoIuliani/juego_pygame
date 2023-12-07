@@ -43,7 +43,7 @@ class Nivel:
 
 
     def play(self, lista_eventos):
-        self.reloj.tick(FPS)
+        self.reloj.tick(30)
         self.leer_inputs(lista_eventos)
         self.pausa()
         self.collisiones()
