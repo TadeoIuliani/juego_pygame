@@ -10,6 +10,7 @@ from class_Plataforma import Plataforma
 from class_Bottom import *
 from class_Nivel import * 
 from textbox import TextBox
+import json
 
 class Game():
     def __init__(self, pantalla) -> None:
@@ -35,19 +36,28 @@ class Game():
         self.boton_nivel1 = Bottom(r"images\BOTONES\Nivel 1.png", 320, 200, (100, 100))
         self.boton_nivel2 = Bottom(r"images\BOTONES\nivel 2.png", 450, 200, (100, 100))
         self.fondo_seleccion_niveles = pygame.image.load(r"images\BOTONES\fondo_score.png")
+
+
+
         #Pasar a Json a futuro-----------------------------------------------------
-        piso = Piso("images\pisos\piso.png", (ANCHO, 80), (0, 525))
-        plataforma_1 = Piso("images\pisos\piso.png", (600, 60), (120, 432))
-        plataforma_2 = Piso("images\pisos\piso.png", (450, 60), (280, 330))
-        plataforma_3 = Piso("images\pisos\piso.png", (400, 60), (120, 220))
-        plataforma_4 = Piso("images\pisos\piso.png", (380, 60), (300, 120))
-        caja = Piso(r"images\cajas\normal.png", (80, 80), (120, 354))
-        caja_2 = Piso(r"images\cajas\normal.png", (80, 80), (640, 250))
-        caja_3 = Piso(r"images\cajas\normal.png", (80, 80), (120, 145))
-        cajas = [caja, caja_2, caja_3]
-        plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
+        # piso = Piso("images\pisos\piso.png", (ANCHO, 80), (0, 525))
+        # plataforma_1 = Piso("images\pisos\piso.png", (600, 60), (120, 432))
+        # plataforma_2 = Piso("images\pisos\piso.png", (450, 60), (280, 330))
+        # plataforma_3 = Piso("images\pisos\piso.png", (400, 60), (120, 220))
+        # plataforma_4 = Piso("images\pisos\piso.png", (380, 60), (300, 120))
+        # caja = Piso(r"images\cajas\normal.png", (80, 80), (120, 354))
+        # caja_1 = Piso(r"images\cajas\normal.png", (80, 80), (640, 250))
+        # caja_2 = Piso(r"images\cajas\normal.png", (80, 80), (120, 145))
+        # cajas = [caja, caja_1, caja_2]
+        # plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
+
+
+
+
+
+
         #-----------------------------------------------------------------------------
-        self.Nivel1 = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
+        # self.Nivel1 = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
         self.puntuacion = 0
         #pantalla_final-----------------------------------------------------------------
         self.imagen_game_over = pygame.image.load("images\pngegg.png")
@@ -155,6 +165,7 @@ class Game():
             self.boton_nivel2.draw(pantalla)
 
             if self.boton_nivel1.is_clicked() == True:
+                self.cargar_nivel(1)
                 if self.opcion_seleccionada == "jugar":
                     self.estado_juego = "jugando"
                     pygame.mixer.music.pause()
@@ -209,6 +220,29 @@ class Game():
     def reset(self):
         self.contenedor_niveles = self.Nivel1
 
+    def cargar_nivel(self, numero_nivel):
+        with open('Nivel.json') as file:
+            data = json.load(file)
+        if numero_nivel == 1:
+            info_piso = data["Piso"]
+            info_plataforma_1 = data["Plataforma_1"]
+            info_plataforma_2 = data["Plataforma_2"]
+            info_plataforma_3 = data["Plataforma_3"]
+            info_plataforma_4 = data["Plataforma_4"]
+            info_caja = data["caja"]
+            info_caja_1 = data["caja_1"]
+            info_caja_2 = data["caja_2"]
+            piso = Piso(info_piso["imagen"], info_piso["dimensiones"], info_piso["ubicacion"])
+            plataforma_1 = Piso(info_plataforma_1["imagen"], info_plataforma_1["dimensiones"], info_plataforma_1["ubicacion"])
+            plataforma_2 = Piso(info_plataforma_2["imagen"], info_plataforma_2["dimensiones"], info_plataforma_2["ubicacion"])
+            plataforma_3 = Piso(info_plataforma_3["imagen"], info_plataforma_3["dimensiones"], info_plataforma_3["ubicacion"])
+            plataforma_4 = Piso(info_plataforma_4["imagen"], info_plataforma_4["dimensiones"], info_plataforma_4["ubicacion"])
+            caja = Piso(info_caja["imagen"], info_caja["dimensiones"], info_caja["ubicacion"])
+            caja_1 = Piso(info_caja_1["imagen"], info_caja_1["dimensiones"], info_caja_1["ubicacion"])
+            caja_2 = Piso(info_caja_2["imagen"], info_caja_2["dimensiones"], info_caja_2["ubicacion"])
+            cajas = [caja, caja_1, caja_2]
+            plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
+            self.Nivel1 = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
 
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))

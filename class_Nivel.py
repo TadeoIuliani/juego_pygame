@@ -21,7 +21,7 @@ class Nivel:
         self.cajas = cajas
         self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
         self.genearador_sapos = GenearadorEnemigos(r"images\sapos\0.png", (40, 30), 5, animaciones_sapo)
-        self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 2)
+        self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 2)
         self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
@@ -38,6 +38,7 @@ class Nivel:
         pygame.mixer.init()
         self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
+        self.sonido_menos_vida = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
         self.reloj = pygame.time.Clock()
         self.cronometro = Cronometro(60000) #60 segundos
@@ -112,6 +113,7 @@ class Nivel:
                 if enemigo.toco == False and enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = True
                     self.vidas -= 1
+                    self.sonido_muerte.play()
                 elif not enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = False
 
@@ -120,10 +122,10 @@ class Nivel:
                 if sapo.toco == False and sapo.rect.colliderect(self.player.rect):
                     sapo.toco = True
                     self.vidas -= 1
+                    self.sonido_muerte.play()
                 elif not sapo.rect.colliderect(self.player.rect):
                     sapo.toco = False
                 
-                # print(enemigo.toco)
 
         if self.puntuacion > 2500: 
             self.gano = True

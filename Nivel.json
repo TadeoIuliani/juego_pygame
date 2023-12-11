@@ -1,0 +1,90 @@
+{
+    "Piso": {
+        "imagen": "images\\pisos\\piso.png",
+        "dimensiones": [
+            900,
+            80
+        ],
+        "ubicacion": [
+            0,
+            525
+        ]
+    },
+    "Plataforma_1": {
+        "imagen": "images\\pisos\\piso.png",
+        "dimensiones": [
+            600,
+            60
+        ],
+        "ubicacion": [
+            120,
+            432
+        ]
+    },
+    "Plataforma_2": {
+        "imagen": "images\\pisos\\piso.png",
+        "dimensiones": [
+            450,
+            60
+        ],
+        "ubicacion": [
+            280,
+            330
+        ]
+    },
+    "Plataforma_3": {
+        "imagen": "images\\pisos\\piso.png",
+        "dimensiones": [
+            450,
+            60
+        ],
+        "ubicacion": [
+            120,
+            220
+        ]
+    },
+    "Plataforma_4": {
+        "imagen": "images\\pisos\\piso.png",
+        "dimensiones": [
+            380,
+            60
+        ],
+        "ubicacion": [
+            300,
+            120
+        ]
+    },
+    "caja": {
+        "imagen": "images\\cajas\\normal.png",
+        "dimensiones": [
+            80,
+            80
+        ],
+        "ubicacion": [
+            120,
+            354
+        ]
+    },
+    "caja_1": {
+        "imagen": "images\\cajas\\normal.png",
+        "dimensiones": [
+            80,
+            80
+        ],
+        "ubicacion": [
+            640,
+            250
+        ]
+    },
+    "caja_2": {
+        "imagen": "images\\cajas\\normal.png",
+        "dimensiones": [
+            80,
+            80
+        ],
+        "ubicacion": [
+            120,
+            145
+        ]
+    }
+}
