@@ -54,11 +54,16 @@ class Game():
         self.imagen_game_over = pygame.transform.scale(self.imagen_game_over, (250, 150))
         self.fondo_fin_juego = pygame.image.load("images\Fondos de juego\Fondo de juego.jpg")
         self.fondo_fin_juego = pygame.transform.scale(self.fondo_fin_juego, (ANCHO, ALTO))
+        #---------------------------------------------------------------------------------
+        pygame.mixer.music.load("sounds\musica-espera-separador-musical-.mp3")
+        pygame.mixer.music.play(-1)
+
+
 
     def run(self):
         pygame.init()
         while self.on:
-            print(self.opcion_seleccionada)
+            # print(self.opcion_seleccionada)
             eventos = pygame.event.get()
             if self.estado_juego == "inicio":
                 self.inicio()
@@ -73,13 +78,21 @@ class Game():
 
             elif self.estado_juego == "jugando":
                 self.contenedor_niveles.play(eventos)
+                # self.contenedor_niveles.cronometro.iniciar_cronometro()
+                print(pygame.time.get_ticks() // 1000)
+                print(self.contenedor_niveles.cronometro.get_tiempo_actual())
                 if self.contenedor_niveles.get_estado_juego() == True:
                     self.puntuacion = self.contenedor_niveles.get_puntuacion()
-                    if self.contenedor_niveles.get_resultado:
+                    if self.contenedor_niveles.get_resultado():
                         self.estado_juego = "gano"
                     else:
                         self.estado_juego = "game_over"
+                else:
+                    self.contenedor_niveles.cronometro.actualizar_cronometro()
                 
+                    if self.contenedor_niveles.get_reset():
+                        self.contenedor_niveles = self.Nivel1
+
             elif self.estado_juego == "gano":
                 self.pantalla_final(self.puntuacion, True)
             elif self.estado_juego == "game_over":
@@ -87,7 +100,7 @@ class Game():
 
             else:
                 print("ERROR")
-                break
+                self.on = False
 
     def inicio(self):
         while self.user == None:
@@ -144,6 +157,10 @@ class Game():
             if self.boton_nivel1.is_clicked() == True:
                 if self.opcion_seleccionada == "jugar":
                     self.estado_juego = "jugando"
+                    pygame.mixer.music.pause()
+                    pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
+                    pygame.mixer.music.play(1)
+                    pygame.mixer.music.set_volume(0.3)
                     self.contenedor_niveles = self.Nivel1
                 elif self.opcion_seleccionada == "ranking":
                     self.ranking(1)
@@ -153,6 +170,10 @@ class Game():
             pygame.display.flip()
 
     def pantalla_final(self, puntuacion, resultado):
+        pygame.mixer.music.pause()
+        pygame.mixer.music.load(r"sounds\010607643_prev.mp3")
+        pygame.mixer.music.play(1)
+        pygame.mixer.music.set_volume(0.3)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -166,8 +187,8 @@ class Game():
                 
             else:
                 pantalla.blit(self.fondo_fin_juego, (0, 0))
-                pantalla.blit(self.imagen_game_over, (300, 250))
-                pantalla.blit(self.Fuente_user.render(f"{self.user} /  Puntaje: {puntuacion}", 0, ROJO), (300, 250))
+                pantalla.blit(self.imagen_game_over, (300, 100))
+                pantalla.blit(self.Fuente_user.render(f"{self.user} /  Puntaje: {puntuacion}", 0, ROJO), (200, 400))
             pygame.display.flip()
 
     def ranking(self, numero_nivel):
@@ -184,6 +205,10 @@ class Game():
             pantalla.blit(self.Fuente_user.render(f"Proximamente se viene ranking", 0, ROJO), (0, 250))
 
             pygame.display.flip()
+
+    def reset(self):
+        self.contenedor_niveles = self.Nivel1
+
 
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))

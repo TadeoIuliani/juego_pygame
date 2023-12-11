@@ -5,7 +5,7 @@ from class_enemigo import *
 from class_item import *
 from class_Piso import *
 from class_sapo import Sapo
-
+from main_cronometro import Cronometro
 from config import *
 from imagenes import *
 from config import *
@@ -30,15 +30,17 @@ class Nivel:
         self.bala_viva = False
         self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright)
         self.rectangulos_prog = False
-        self.cronometro = 0
         self.gano = None
         self.fin_juego = False
         self.pause = False
+        self.reset = False
+        self.bandera_crono = False
         pygame.mixer.init()
         self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
-        self.sonido_item = pygame.mixer.Sound(r"sounds\agarras_item.mp3")
+        self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
         self.reloj = pygame.time.Clock()
+        # self.cronometro = Cronometro(60000) #60 segundos
 
 
 
@@ -68,8 +70,12 @@ class Nivel:
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
                     self.rectangulos_prog = not self.rectangulos_prog
+                    if self.bandera_crono == False:
+                        self.cronometro = Cronometro(60000)
+                        self.cronometro.iniciar_cronometro()
+                        self.bandera_crono = True
                 elif event.key == pygame.K_r:
-                    self.reset()
+                    self.reset = True
                 elif event.key == pygame.K_p:
                     self.pause = not self.pause
 
@@ -149,9 +155,9 @@ class Nivel:
         if len(self.lista_sapos) == 0:
             self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
         
-        self.cronometro = pygame.time.get_ticks() // 1000
-        self.cronometro = 60 - int(self.cronometro)
-        if self.cronometro < 1:
+        # self.cronometro = pygame.time.get_ticks() // 1000
+        # self.cronometro = 60 - int(self.cronometro)
+        if self.cronometro.get_tiempo_actual() < 1:
             self.fin_juego = True
 
 
@@ -179,7 +185,6 @@ class Nivel:
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
-        self.pantalla.blit(self.Fuente.render("Tiempo: " + str(self.cronometro), 0, BLANCO), (500, 20))
 
         for i in range(len(self.lista_enemigos)):
             self.lista_enemigos[i].update(self.pantalla)
@@ -188,22 +193,15 @@ class Nivel:
         if self.bala_viva:
             self.laser.update(self.pantalla)
 
-        print(self.bala_viva)
+        # print(self.bala_viva)
 
         for sapo in self.lista_sapos:
             sapo.update(self.pantalla)
         
+        self.cronometro.actualizar_cronometro()
+        self.cronometro.dibujar_cronometro(self.pantalla)
+        # self.pantalla.blit(self.Fuente.render("Tiempo: " + str(self.cronometro.get_tiempo_actual()), 0, BLANCO), (500, 20))
         pygame.display.flip()
-
-
-    def reset(self):
-        self.puntuacion = 0
-        self.cronometro = 60
-        self.fin_juego = False
-        self.player.rect = CENTER
-        self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
-        self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
-        self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
 
 
     def pausa(self):    
@@ -220,6 +218,8 @@ class Nivel:
             for sapo in self.lista_sapos:
                 sapo.velocidad = 5
 
+        self.cronometro.detener_cronometro()
+
     def get_estado_juego(self):
         if self.fin_juego:
             return True
@@ -235,3 +235,5 @@ class Nivel:
     def get_puntuacion(self):
         return self.puntuacion
     
+    def get_reset(self):
+        return self.reset

@@ -18,8 +18,8 @@ class Sapo(pygame.sprite.Sprite):
         self.velocidad = SPEED
         #gravedad
         self.gravedad = 1
-        self.potencia_salto = -12
-        self.limite_velocidad_caidad = 12
+        self.potencia_salto = -10
+        self.limite_velocidad_caidad = 10
         self.esta_saltando = True
         self.desplazamiento_y = 0
 
