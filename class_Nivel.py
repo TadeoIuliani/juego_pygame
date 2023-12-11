@@ -40,8 +40,7 @@ class Nivel:
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
         self.reloj = pygame.time.Clock()
-        # self.cronometro = Cronometro(60000) #60 segundos
-
+        self.cronometro = Cronometro(60000) #60 segundos
 
 
     def play(self, lista_eventos):
@@ -109,14 +108,22 @@ class Nivel:
                     self.puntuacion += 200
 
         if len(self.lista_enemigos) != 0:
-            for enemigo in self.lista_enemigos:
-                if enemigo.rect.colliderect(self.player.rect):
+            for enemigo in self.lista_enemigos: 
+                if enemigo.toco == False and enemigo.rect.colliderect(self.player.rect):
+                    enemigo.toco = True
                     self.vidas -= 1
+                elif not enemigo.rect.colliderect(self.player.rect):
+                    enemigo.toco = False
 
         if len(self.lista_sapos) != 0:
-            for sapo in self.lista_sapos:
-                if sapo.rect.colliderect(self.player.rect):
+            for sapo in self.lista_sapos: 
+                if sapo.toco == False and sapo.rect.colliderect(self.player.rect):
+                    sapo.toco = True
                     self.vidas -= 1
+                elif not sapo.rect.colliderect(self.player.rect):
+                    sapo.toco = False
+                
+                # print(enemigo.toco)
 
         if self.puntuacion > 2500: 
             self.gano = True
@@ -199,7 +206,7 @@ class Nivel:
             sapo.update(self.pantalla)
         
         self.cronometro.actualizar_cronometro()
-        self.cronometro.dibujar_cronometro(self.pantalla)
+        # self.cronometro.dibujar_cronometro(self.pantalla)
         # self.pantalla.blit(self.Fuente.render("Tiempo: " + str(self.cronometro.get_tiempo_actual()), 0, BLANCO), (500, 20))
         pygame.display.flip()
 

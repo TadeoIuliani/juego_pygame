@@ -11,6 +11,7 @@ class Sapo(pygame.sprite.Sprite):
         self.rect.x = random.randint(100, ANCHO)
         self.rect.y = random.randint(-100, ALTO - 100)
         self.lados = self.obtener_rectangulos()
+        self.toco = False
         #animaciones
         self.contador_pasos = 0
         self.estado = "cayendo"
