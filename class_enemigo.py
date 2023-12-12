@@ -10,7 +10,7 @@ class Enemigo(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image ,tamaño)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(100, ANCHO)
-        self.rect.y = random.randint(-100, ALTO - 100)
+        self.rect.y = random.randint(-100, ALTO - 200)
         self.lados = self.obtener_rectangulos()
         self.toco = False
         #animaciones
@@ -84,8 +84,6 @@ class Enemigo(pygame.sprite.Sprite):
 
     def random_coor(self):
         x = random.randrange(40, (90 - 40))
-        # self.rect.x = x
         y = random.randrange(-200, (700 - 100))
-        # self.rect.y = y 
         return x, y
 

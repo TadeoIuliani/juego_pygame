@@ -34,18 +34,24 @@ class Nivel:
         self.fin_juego = False
         self.pause = False
         self.reset = False
-        self.bandera_crono = False
+        self.sonidos_activados = True
         pygame.mixer.init()
         self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_menos_vida = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
         self.reloj = pygame.time.Clock()
-        self.cronometro = Cronometro(60000) #60 segundos
+        self.cronometro = None
+        self.tiempo_inicio = 60
+        self.tiempo_actual = self.tiempo_inicio
 
 
     def play(self, lista_eventos):
         self.reloj.tick(30)
+        if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
+            self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
+            self.cronometro = pygame.time.get_ticks() // 1000
+        self.configuracion_sonidos()
         self.leer_inputs(lista_eventos)
         self.pausa()
         self.collisiones()
@@ -70,10 +76,6 @@ class Nivel:
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
                     self.rectangulos_prog = not self.rectangulos_prog
-                    if self.bandera_crono == False:
-                        self.cronometro = Cronometro(60000)
-                        self.cronometro.iniciar_cronometro()
-                        self.bandera_crono = True
                 elif event.key == pygame.K_r:
                     self.reset = True
                 elif event.key == pygame.K_p:
@@ -164,10 +166,11 @@ class Nivel:
         if len(self.lista_sapos) == 0:
             self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
         
-        # self.cronometro = pygame.time.get_ticks() // 1000
-        # self.cronometro = 60 - int(self.cronometro)
-        if self.cronometro.get_tiempo_actual() < 1:
-            self.fin_juego = True
+        self.cronometro = pygame.time.get_ticks() // 1000
+        if self.tiempo_actual > 1:
+            self.tiempo_actual = self.tiempo_inicio - self.cronometro
+        print(self.tiempo_actual)
+
 
 
     def actualizar_pantalla(self):
@@ -194,6 +197,7 @@ class Nivel:
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), (500, 20))
 
         for i in range(len(self.lista_enemigos)):
             self.lista_enemigos[i].update(self.pantalla)
@@ -202,14 +206,10 @@ class Nivel:
         if self.bala_viva:
             self.laser.update(self.pantalla)
 
-        # print(self.bala_viva)
 
         for sapo in self.lista_sapos:
             sapo.update(self.pantalla)
         
-        self.cronometro.actualizar_cronometro()
-        # self.cronometro.dibujar_cronometro(self.pantalla)
-        # self.pantalla.blit(self.Fuente.render("Tiempo: " + str(self.cronometro.get_tiempo_actual()), 0, BLANCO), (500, 20))
         pygame.display.flip()
 
 
@@ -227,7 +227,6 @@ class Nivel:
             for sapo in self.lista_sapos:
                 sapo.velocidad = 5
 
-        self.cronometro.detener_cronometro()
 
     def get_estado_juego(self):
         if self.fin_juego:
@@ -246,3 +245,24 @@ class Nivel:
     
     def get_reset(self):
         return self.reset
+    
+    def get_pausa(self):
+        return self.pause
+    
+    def get_sonido_activado(self):
+        return self.sonidos_activados
+    
+    def set_sonido_activado(self, activado):
+        self.sonidos_activados = activado
+
+    def configuracion_sonidos(self):
+        if self.sonidos_activados:
+            self.sonido_disparo.set_volume(0.3)
+            self.sonido_item.set_volume(0.3)
+            self.sonido_muerte.set_volume(0.3)
+            self.sonido_menos_vida.set_volume(0.3)
+        else:
+            self.sonido_disparo.set_volume(0.0)
+            self.sonido_item.set_volume(0.0)
+            self.sonido_muerte.set_volume(0.0)
+            self.sonido_menos_vida.set_volume(0.0)

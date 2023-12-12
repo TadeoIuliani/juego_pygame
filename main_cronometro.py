@@ -40,18 +40,6 @@ class Cronometro:
         return self.tiempo_actual // 1000
 
 
-class Cronometro_2:
-    def __init__(self, tiempo_inicial) -> None:
-        self.tiempo_inicial = tiempo_inicial
-        self.tiempo_actual = self.tiempo_inicial
-        self.is_running = False
-    
-    def iniciar_cronometro(self):
-        self.is_running = True
-        self.tiempo_pygame = pygame.time.get_ticks // 1000
-
-        self.tiempo_transcurrido = pygame.time.get_ticks() - self.tiempo_inicial
-
 # Ejemplo usandolo:
 # pygame.init()
 # pantalla = pygame.display.set_mode((ANCHO, ALTO))

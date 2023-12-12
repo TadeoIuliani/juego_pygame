@@ -36,9 +36,9 @@ boton_inicio = Bottom(r"images\BOTONES\play.png", 350, 200, (200, 80))
 boton_ranking = Bottom(r"images\BOTONES\ranking.png", 350, 400, (200, 80))
 mostrar = False
 
+
 while True:
-    mensaje = None
-    reloj.tick(27)  
+    reloj.tick(30)  
     eventos = pygame.event.get()
     for event in eventos:
         if event.type == pygame.QUIT:
