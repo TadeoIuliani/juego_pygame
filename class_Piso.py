@@ -22,3 +22,23 @@ class Piso(pygame.sprite.Sprite):
 
     def update(self, pantalla) -> None:
         pass
+
+
+
+class Trampa(Piso):
+    def __init__(self, image, tamaño, ubicacion, estado, animaciones):
+        super().__init__(image, tamaño, ubicacion)
+        self.funcionando = estado
+        self.animaciones = animaciones
+        self.contador = 0
+        self.toco = False
+
+    def animar(self, pantalla):
+        if self.funcionando:
+            if self.contador >= len(self.animaciones["on"]):
+                self.contador = 0
+            pantalla.blit(self.animaciones["on"][self.contador], self.rect)
+            self.contador += 1
+
+    def update(self, pantalla) -> None:
+        self.animar(pantalla)

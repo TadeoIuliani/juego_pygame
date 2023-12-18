@@ -31,8 +31,9 @@ class Game():
         self.contenedor_niveles = None
 
         #Eleccion niveles-------------------------------------------------------------------
-        self.boton_nivel1 = Bottom(r"images\BOTONES\Nivel 1.png", 320, 200, (100, 100))
-        self.boton_nivel2 = Bottom(r"images\BOTONES\nivel 2.png", 450, 200, (100, 100))
+        self.boton_nivel1 = Bottom(r"images\BOTONES\Nivel 1.png", 326, 200, (120, 120))
+        self.boton_nivel2 = Bottom(r"images\BOTONES\nivel 2.png", 475, 200, (120, 120))
+        self.boton_nivel3 = Bottom(r"images\BOTONES\nivel 3.png", 400, 330, (120, 120))
         self.fondo_seleccion_niveles = pygame.image.load(r"images\BOTONES\fondo_score.png")
         self.fondo_seleccion_niveles = pygame.transform.scale(self.fondo_seleccion_niveles, (350, 400))
         self.image_crash = pygame.image.load(r"images\Portada\4.png")
@@ -120,6 +121,7 @@ class Game():
             self.pantalla.blit(self.image_crash, (630, 170))
             self.boton_nivel1.draw(pantalla)
             self.boton_nivel2.draw(pantalla)
+            self.boton_nivel3.draw(pantalla)
 
             if self.boton_nivel1.is_clicked() == True:
                 self.cargar_nivel(1)
@@ -132,6 +134,9 @@ class Game():
                 
             if self.boton_nivel2.is_clicked() == True:
                 print("Nivel 2 ... proximamente")
+
+            if self.boton_nivel3.is_clicked() == True:
+                print("Nivel 3 .....")
             pygame.display.flip()
 
     def pantalla_final(self, puntuacion, resultado):

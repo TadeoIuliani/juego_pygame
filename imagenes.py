@@ -165,3 +165,54 @@ animaciones_sapo["cayendo"] = [
 caja = {
     "imagen" : r"images\cajas\normal.png"
 }
+
+trampa = {}
+trampa["on"] = [
+    pygame.image.load(r"images\trampa\On_1.png"),
+    pygame.image.load(r"images\trampa\On_2.png"),
+    pygame.image.load(r"images\trampa\On_3.png"),
+    pygame.image.load(r"images\trampa\On_4.png"),
+    pygame.image.load(r"images\trampa\On_5.png"),
+    pygame.image.load(r"images\trampa\On_6.png"),
+    pygame.image.load(r"images\trampa\On_7.png"),
+    pygame.image.load(r"images\trampa\On_8.png"),
+]
+trampa["off"] = [pygame.image.load(r"images\trampa\Off.png")]
+
+
+
+camaleon = {}
+camaleon["izquierda"] = [
+    pygame.image.load(r"images\camaleon\camaleon_caminar_1.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_2.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_3.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_4.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_5.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_6.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_7.png"),
+    pygame.image.load(r"images\camaleon\camaleon_caminar_8.png"),
+]
+camaleon["izquierda"] = reescalar_imagenes(camaleon["izquierda"], (80, 50))
+
+camaleon["derecha"] = rotar_imagen(camaleon["izquierda"], True, False)
+
+camaleon["cayendo"] = [
+    pygame.image.load(r"images\camaleon\camaleon_caminar_4.png")
+]
+camaleon["cayendo"] = reescalar_imagenes(camaleon["cayendo"], (80, 50))
+
+camaleon["atacar_izquierda"] = [
+    pygame.image.load(r"images\camaleon\camaleon_ataque_1.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_2.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_3.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_4.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_5.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_6.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_7.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_8.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_9.png"),
+    pygame.image.load(r"images\camaleon\camaleon_ataque_10.png"),
+]
+camaleon["atacar_izquierda"] = reescalar_imagenes(camaleon["atacar_izquierda"], (80, 50))
+
+camaleon["atacar_derecha"] = rotar_imagen(camaleon["atacar_izquierda"], True, False)

@@ -9,6 +9,7 @@ from class_sapo import Sapo
 from class_Plataforma import Plataforma
 from class_Bottom import *
 from class_Nivel import *
+from class_Nivel2 import Nivel_2
 
 
 pygame.init()
@@ -17,20 +18,29 @@ reloj = pygame.time.Clock()
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Juego Practica")
-path_caja = caja["imagen"]
 
-piso = Piso("images\pisos\piso.png", (ANCHO, 80), (0, 525))
-plataforma_1 = Piso("images\pisos\piso.png", (600, 60), (120, 432))
-plataforma_2 = Piso("images\pisos\piso.png", (450, 60), (280, 330))
-plataforma_3 = Piso("images\pisos\piso.png", (400, 60), (120, 220))
-plataforma_4 = Piso("images\pisos\piso.png", (380, 60), (300, 120))
-caja = Piso(path_caja, (80, 80), (120, 354))
-caja_2 = Piso(path_caja, (80, 80), (640, 250))
-caja_3 = Piso(path_caja, (80, 80), (120, 145))
-cajas = [caja, caja_2, caja_3]
-plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
+path_caja = caja["imagen"]
+path_caja = "images\cajas\caja_nivel2.png"
+
+piso = Piso("images\pisos\piso_2.png", (ANCHO, 70), (0, 525))
+
+plataforma_1 = Piso("images\pisos\piso_2.png", (230, 60), (0, 430))
+plataforma_2 = Piso("images\pisos\piso_2.png", (230, 60), (335, 430))
+plataforma_3 = Piso("images\pisos\piso_2.png", (230, 60), (670, 430))
+
+plataforma_4 = Piso("images\pisos\piso_2.png", (580, 60), (160, 340))
+plataforma_5 = Piso("images\pisos\piso_2.png", (300, 60), (0, 250))
+plataforma_6 = Piso("images\pisos\piso_2.png", (300, 60), (600, 250))
+
+caja = Piso(path_caja, (90, 90), (370, 200))
+caja_2 = Piso(path_caja, (90, 90), (370+90, 200))
+cajas = [caja, caja_2]
+plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5, plataforma_6]
+
 Fuente = pygame.font.SysFont("Segoe Print", 30)
-juego = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
+
+
+juego = Nivel_2(r"images\Fondos de juego\47792.jpg", plataformas, cajas)
 
 boton_inicio = Bottom(r"images\BOTONES\play.png", 350, 200, (200, 80))
 boton_ranking = Bottom(r"images\BOTONES\ranking.png", 350, 400, (200, 80))

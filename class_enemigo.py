@@ -87,3 +87,50 @@ class Enemigo(pygame.sprite.Sprite):
         y = random.randrange(-200, (700 - 100))
         return x, y
 
+
+
+class Enemigo_2(Enemigo):
+    def __init__(self, image, tamaño, SPEED, animaciones, ubicacion) -> None:
+        super().__init__(image, tamaño, SPEED, animaciones)
+        self.estado = "cayendo"
+        self.rect.center = ubicacion
+
+    def obtener_rectangulos(self):
+        return super().obtener_rectangulos()
+    
+    def aplicar_gravedad(self, pantalla):
+        return super().aplicar_gravedad(pantalla)
+    
+    def animar(self, pantalla):
+        return super().animar(pantalla)
+    
+    def update(self, pantalla):
+        match self.estado:
+            case "derecha":
+                if not self.esta_cayendo:
+                    self.animar(pantalla)
+                self.mover()
+            case "izquierda":
+                if not self.esta_cayendo:
+                    self.animar(pantalla)
+                self.mover()
+            case "cayendo":
+                if not self.esta_cayendo:
+                    self.esta_cayendo = True
+                    self.estado = "derecha"
+            case "atacar_derecha":
+                if not self.esta_cayendo:
+                    self.animar(pantalla)
+                self.mover()
+            case "atacar_izquierda":
+                if not self.esta_cayendo:
+                    self.animar(pantalla)
+                self.mover()
+        if self.esta_cayendo:
+            self.aplicar_gravedad(pantalla)
+    
+    def atacar(self, derecha: bool):
+        if derecha:
+            self.estado = "atacar_derecha"
+        else:
+            self.estado = "atacar_izquierda"
