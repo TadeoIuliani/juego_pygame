@@ -82,10 +82,10 @@ class Enemigo(pygame.sprite.Sprite):
             if self.desplazamiento_y + self.gravedad < self.limite_velocidad_caidad:
                 self.desplazamiento_y += self.gravedad
 
-    def random_coor(self):
-        x = random.randrange(40, (90 - 40))
-        y = random.randrange(-200, (700 - 100))
-        return x, y
+    # def random_coor(self):
+    #     x = random.randrange(40, (90 - 40))
+    #     y = random.randrange(-200, (700 - 100))
+    #     return x, y
 
 
 
@@ -93,11 +93,10 @@ class Enemigo_2(Enemigo):
     def __init__(self, image, tamaño, SPEED, animaciones, ubicacion) -> None:
         super().__init__(image, tamaño, SPEED, animaciones)
         self.estado = "cayendo"
-        self.rect.center = ubicacion
+        self.rect.x, self.rect.y = ubicacion
+        self.lados = self.obtener_rectangulos()
+        self.laser = None
 
-    def obtener_rectangulos(self):
-        return super().obtener_rectangulos()
-    
     def aplicar_gravedad(self, pantalla):
         return super().aplicar_gravedad(pantalla)
     

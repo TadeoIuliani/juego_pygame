@@ -19,19 +19,17 @@ class Nivel_2():
         self.player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
         self.plataformas = plataformas
         self.cajas = cajas
-        # self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
-        # self.genearador_sapos = GenearadorEnemigos(r"images\sapos\0.png", (40, 30), 5, animaciones_sapo)
-        # self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
-        self.prueba = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (700, 100))
+      
+        self.prueba = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.lista_enemigos = [self.prueba]
-        # self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 2)
+
         self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.puntuacion = 0
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
         self.bala_viva = False
-        self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright)
-        self.laser_enemigo = Laser(r"images\Ice Particle.png", self.prueba.rect.bottomleft)
+        self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
+        # self.laser_enemigo = Laser(r"images\Ice Particle.png", self.prueba.rect.bottomleft, 15)
         self.rectangulos_prog = False
         self.gano = None
         self.fin_juego = False
@@ -48,18 +46,20 @@ class Nivel_2():
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
 
-
+        self.bala_enemigo = None
+        self.vida_bala_enemigo = False
+        self.rect_tiro = pygame.Rect((0, 300), (ANCHO, 40))
 
         self.trampa = Trampa(r"images\trampa\Off.png", (60, 60), (300, 100), True, trampa)
     
     def play(self, lista_eventos):
         self.reloj.tick(30)
+
         if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
             self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
             self.cronometro = pygame.time.get_ticks() // 1000
-        # self.configuracion_sonidos()
+
         self.leer_inputs(lista_eventos)
-        # self.pausa()
         self.collisiones()
         self.actualizar_pantalla() 
     
@@ -71,18 +71,18 @@ class Nivel_2():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_x:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright)
+                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_z:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright, False)
+                        self.laser = Laser("images\disparo.png", self.player.rect.midright,20 ,False)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
                     self.rectangulos_prog = not self.rectangulos_prog
-                    for enemigo in self.lista_enemigos:
-                        enemigo.atacar(True)
+                    # for enemigo in self.lista_enemigos:
+                    #     enemigo.atacar(True)
                 elif event.key == pygame.K_r:
                     self.reset = True
                 elif event.key == pygame.K_p:
@@ -102,7 +102,6 @@ class Nivel_2():
 
     def collisiones(self):
         collision_enemigos_plataformas(self.lista_enemigos, self.plataformas)
-        # collision_sapo_plataformas(self.lista_sapos, self.plataformas)
         collision_player_plataformas(self.player, self.plataformas)
         collision_player_caja(self.player, self.cajas)
 
@@ -129,15 +128,27 @@ class Nivel_2():
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos.remove(enemigo)
 
-        # if len(self.lista_sapos) != 0:
-        #     for sapo in self.lista_sapos: 
-        #         if sapo.toco == False and sapo.rect.colliderect(self.player.rect):
-        #             sapo.toco = True
-        #             self.vidas -= 1
-        #             self.sonido_muerte.play()
-        #         elif not sapo.rect.colliderect(self.player.rect):
-        #             sapo.toco = False
-                
+        if self.player.rect.colliderect(self.rect_tiro):
+            if self.player.rect.x < 450 and self.vida_bala_enemigo == False:
+                self.prueba.estado = "atacar_izquierda"
+                self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
+                self.vida_bala_enemigo = True
+
+            elif self.vida_bala_enemigo == False:
+                self.prueba.estado = "atacar_derecha"
+                self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , True)
+                self.vida_bala_enemigo = True
+        else:
+            if self.prueba.estado == "atacar_derecha":
+                self.prueba.estado = "izquierda"
+            elif self.prueba.estado == "atacar_izquierda":
+                self.prueba.estado = "derecha"
+
+
+        if self.vida_bala_enemigo:
+            if self.bala_enemigo.rect.x < 0 or self.bala_enemigo.rect.x > ANCHO:
+                self.vida_bala_enemigo = False
+        
 
         if self.puntuacion > 2500: 
             self.gano = True
@@ -154,12 +165,7 @@ class Nivel_2():
                     self.lista_enemigos.remove(enemigo)
                     self.puntuacion += 100
                     self.bala_viva = False
-            # for sapo in self.lista_sapos:
-            #     if sapo.rect.colliderect(self.laser.rect):
-            #         self.sonido_muerte.play()
-            #         self.lista_sapos.remove(sapo)
-            #         self.puntuacion += 100
-            #         self.bala_viva = False
+
             if self.laser.rect.x < 0:
                 self.bala_viva = False
         
@@ -175,12 +181,7 @@ class Nivel_2():
         if len(self.lista_frutas) == 0:
             self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
 
-        # if len(self.lista_enemigos) == 0:
-        #     self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
-            
-        # if len(self.lista_sapos) == 0:
-        #     self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
-        
+
         self.cronometro = pygame.time.get_ticks() // 1000
         if self.tiempo_actual > 1:
             self.tiempo_actual = self.tiempo_inicio - self.cronometro
@@ -213,6 +214,7 @@ class Nivel_2():
 
             pygame.draw.line(self.pantalla, AZUL, self.prueba.rect.topleft, (0, self.prueba.rect.y))
             pygame.draw.line(self.pantalla, AZUL, self.prueba.rect.topright, (ANCHO, self.prueba.rect.y))
+            pygame.draw.rect(self.pantalla, AMARILLO, self.rect_tiro, 2)
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
@@ -225,7 +227,8 @@ class Nivel_2():
         if self.bala_viva:
             self.laser.update(self.pantalla)
 
-        
+        if self.vida_bala_enemigo:
+            self.bala_enemigo.update(self.pantalla)
         # for sapo in self.lista_sapos:
         #     sapo.update(self.pantalla)
         
