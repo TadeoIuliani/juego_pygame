@@ -178,6 +178,8 @@ trampa["on"] = [
     pygame.image.load(r"images\trampa\On_8.png"),
 ]
 trampa["off"] = [pygame.image.load(r"images\trampa\Off.png")]
+trampa["on"] = reescalar_imagenes(trampa["on"], (30, 30))
+trampa["off"] = reescalar_imagenes(trampa["off"], (30, 30))
 
 
 

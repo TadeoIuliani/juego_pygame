@@ -11,7 +11,7 @@ from imagenes import *
 from config import *
 
 
-class Nivel_2(Nivel):
+class Nivel_2():
     def __init__(self, fondo_path, plataformas, cajas) -> None:
         self.pantalla = pygame.display.set_mode((ANCHO, ALTO))
         self.fondo = pygame.image.load(fondo_path) 
@@ -19,14 +19,17 @@ class Nivel_2(Nivel):
         self.player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
         self.plataformas = plataformas
         self.cajas = cajas
+      
         self.prueba = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.lista_enemigos = [self.prueba]
+
         self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.puntuacion = 0
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
         self.bala_viva = False
         self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
+        # self.laser_enemigo = Laser(r"images\Ice Particle.png", self.prueba.rect.bottomleft, 15)
         self.rectangulos_prog = False
         self.gano = None
         self.fin_juego = False
@@ -42,15 +45,13 @@ class Nivel_2(Nivel):
         self.cronometro = None
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
+
         self.bala_enemigo = None
         self.vida_bala_enemigo = False
         self.rect_tiro = pygame.Rect((0, 300), (ANCHO, 40))
-        self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (200, 170), True, trampa)
-        self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
-        self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
 
-
-
+        self.trampa = Trampa(r"images\trampa\Off.png", (60, 60), (300, 100), True, trampa)
+    
     def play(self, lista_eventos):
         self.reloj.tick(30)
 
@@ -80,6 +81,8 @@ class Nivel_2(Nivel):
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
                     self.rectangulos_prog = not self.rectangulos_prog
+                    # for enemigo in self.lista_enemigos:
+                    #     enemigo.atacar(True)
                 elif event.key == pygame.K_r:
                     self.reset = True
                 elif event.key == pygame.K_p:
@@ -99,7 +102,6 @@ class Nivel_2(Nivel):
 
     def collisiones(self):
         collision_enemigos_plataformas(self.lista_enemigos, self.plataformas)
-        collision_enemigos_plataformas(self.lista_enemigos_cangrejos, self.plataformas)
         collision_player_plataformas(self.player, self.plataformas)
         collision_player_caja(self.player, self.cajas)
 
@@ -126,42 +128,25 @@ class Nivel_2(Nivel):
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos.remove(enemigo)
 
-                if self.player.rect.colliderect(self.rect_tiro):
-                    if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
-                        enemigo.estado = "atacar_izquierda"
-                        self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
-                        self.vida_bala_enemigo = True
+        if self.player.rect.colliderect(self.rect_tiro):
+            if self.player.rect.x < 450 and self.vida_bala_enemigo == False:
+                self.prueba.estado = "atacar_izquierda"
+                self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
+                self.vida_bala_enemigo = True
 
-                    elif self.vida_bala_enemigo == False:
-                        enemigo.estado = "atacar_derecha"
-                        self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , True)
-                        self.vida_bala_enemigo = True
-                else:
-                    if enemigo.estado == "atacar_derecha":
-                        enemigo.estado = "izquierda"
-                    elif enemigo.estado == "atacar_izquierda":
-                        enemigo.estado = "derecha"
-
-        
-        if len(self.lista_enemigos_cangrejos) != 0:
-            for enemigo in self.lista_enemigos_cangrejos: 
-                if enemigo.toco == False and enemigo.rect.colliderect(self.player.rect):
-                    enemigo.toco = True
-                    self.vidas -= 1
-                    self.sonido_muerte.play()
-                elif not enemigo.rect.colliderect(self.player.rect):
-                    enemigo.toco = False
-                
-                if enemigo.rect.y > ALTO:
-                    self.lista_enemigos_cangrejos.remove(enemigo)
+            elif self.vida_bala_enemigo == False:
+                self.prueba.estado = "atacar_derecha"
+                self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , True)
+                self.vida_bala_enemigo = True
         else:
-            self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
-            
+            if self.prueba.estado == "atacar_derecha":
+                self.prueba.estado = "izquierda"
+            elif self.prueba.estado == "atacar_izquierda":
+                self.prueba.estado = "derecha"
+
+
         if self.vida_bala_enemigo:
             if self.bala_enemigo.rect.x < 0 or self.bala_enemigo.rect.x > ANCHO:
-                self.vida_bala_enemigo = False
-            if self.bala_enemigo.rect.colliderect(self.player.rect):
-                self.vidas -= 1
                 self.vida_bala_enemigo = False
         
 
@@ -178,13 +163,6 @@ class Nivel_2(Nivel):
                 if enemigo.rect.colliderect(self.laser.rect):
                     self.sonido_muerte.play()
                     self.lista_enemigos.remove(enemigo)
-                    self.puntuacion += 100
-                    self.bala_viva = False
-
-            for enemigo in self.lista_enemigos_cangrejos:
-                if enemigo.rect.colliderect(self.laser.rect):
-                    self.sonido_muerte.play()
-                    self.lista_enemigos_cangrejos.remove(enemigo)
                     self.puntuacion += 100
                     self.bala_viva = False
 
@@ -242,35 +220,17 @@ class Nivel_2(Nivel):
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
         self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), (500, 20))
 
-        for enemigo in self.lista_enemigos:
-            enemigo.update(self.pantalla)
-
-        for enemigo in self.lista_enemigos_cangrejos:
-            enemigo.update(self.pantalla)
-
+        # for enemigo in self.lista_enemigos:
+        #     enemigo.update(self.pantalla)
+        self.prueba.update(self.pantalla)
         self.player.update(self.pantalla)
         if self.bala_viva:
             self.laser.update(self.pantalla)
 
         if self.vida_bala_enemigo:
             self.bala_enemigo.update(self.pantalla)
+        # for sapo in self.lista_sapos:
+        #     sapo.update(self.pantalla)
         
         self.trampa.update(self.pantalla)
         pygame.display.flip()
-
-    def get_puntuacion(self):
-        return super().get_puntuacion()
-    
-    def pausa(self):
-        return super().pausa()
-    
-    def get_estado_juego(self):
-        return super().get_estado_juego()
-    
-    def get_resultado(self):
-        return super().get_resultado()
-    def set_sonido_activado(self, activado):
-        return super().set_sonido_activado(activado)
-    def configuracion_sonidos(self):
-        return super().configuracion_sonidos()
-    

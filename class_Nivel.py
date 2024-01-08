@@ -28,7 +28,7 @@ class Nivel:
         self.puntuacion = 0
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
         self.bala_viva = False
-        self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright)
+        self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
         self.rectangulos_prog = False
         self.gano = None
         self.fin_juego = False
@@ -66,12 +66,12 @@ class Nivel:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_x:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright)
+                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_z:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright, False)
+                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20, False)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
@@ -175,7 +175,7 @@ class Nivel:
         else:
             self.gano = True
             self.fin_juego = True
-        print(self.tiempo_actual)
+        # print(self.tiempo_actual)
 
 
 
@@ -262,12 +262,12 @@ class Nivel:
 
     def configuracion_sonidos(self):
         if self.sonidos_activados:
-            self.sonido_disparo.set_volume(0.3)
-            self.sonido_item.set_volume(0.3)
-            self.sonido_muerte.set_volume(0.3)
-            self.sonido_menos_vida.set_volume(0.3)
+            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() + 0.3)
+            self.sonido_item.set_volume(self.sonido_item.get_volume() + 0.3)
+            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() + 0.3)
+            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() + 0.3)
         else:
-            self.sonido_disparo.set_volume(0.0)
-            self.sonido_item.set_volume(0.0)
-            self.sonido_muerte.set_volume(0.0)
-            self.sonido_menos_vida.set_volume(0.0)
+            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() - 0.3)
+            self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.3)
+            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
+            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)

@@ -1,90 +1,193 @@
 {
-    "Piso": {
-        "imagen": "images\\pisos\\piso.png",
-        "dimensiones": [
-            900,
-            80
-        ],
-        "ubicacion": [
-            0,
-            525
-        ]
+    "Nivel_1": {
+        "Piso": {
+            "imagen": "images\\pisos\\piso.png",
+            "dimensiones": [
+                900,
+                80
+            ],
+            "ubicacion": [
+                0,
+                525
+            ]
+        },
+        "Plataforma_1": {
+            "imagen": "images\\pisos\\piso.png",
+            "dimensiones": [
+                600,
+                60
+            ],
+            "ubicacion": [
+                120,
+                432
+            ]
+        },
+        "Plataforma_2": {
+            "imagen": "images\\pisos\\piso.png",
+            "dimensiones": [
+                450,
+                60
+            ],
+            "ubicacion": [
+                280,
+                330
+            ]
+        },
+        "Plataforma_3": {
+            "imagen": "images\\pisos\\piso.png",
+            "dimensiones": [
+                450,
+                60
+            ],
+            "ubicacion": [
+                120,
+                220
+            ]
+        },
+        "Plataforma_4": {
+            "imagen": "images\\pisos\\piso.png",
+            "dimensiones": [
+                380,
+                60
+            ],
+            "ubicacion": [
+                300,
+                120
+            ]
+        },
+        "caja": {
+            "imagen": "images\\cajas\\normal.png",
+            "dimensiones": [
+                80,
+                80
+            ],
+            "ubicacion": [
+                120,
+                354
+            ]
+        },
+        "caja_1": {
+            "imagen": "images\\cajas\\normal.png",
+            "dimensiones": [
+                80,
+                80
+            ],
+            "ubicacion": [
+                640,
+                250
+            ]
+        },
+        "caja_2": {
+            "imagen": "images\\cajas\\normal.png",
+            "dimensiones": [
+                80,
+                80
+            ],
+            "ubicacion": [
+                120,
+                145
+            ]
+        }
     },
-    "Plataforma_1": {
-        "imagen": "images\\pisos\\piso.png",
-        "dimensiones": [
-            600,
-            60
-        ],
-        "ubicacion": [
-            120,
-            432
-        ]
-    },
-    "Plataforma_2": {
-        "imagen": "images\\pisos\\piso.png",
-        "dimensiones": [
-            450,
-            60
-        ],
-        "ubicacion": [
-            280,
-            330
-        ]
-    },
-    "Plataforma_3": {
-        "imagen": "images\\pisos\\piso.png",
-        "dimensiones": [
-            450,
-            60
-        ],
-        "ubicacion": [
-            120,
-            220
-        ]
-    },
-    "Plataforma_4": {
-        "imagen": "images\\pisos\\piso.png",
-        "dimensiones": [
-            380,
-            60
-        ],
-        "ubicacion": [
-            300,
-            120
-        ]
-    },
-    "caja": {
-        "imagen": "images\\cajas\\normal.png",
-        "dimensiones": [
-            80,
-            80
-        ],
-        "ubicacion": [
-            120,
-            354
-        ]
-    },
-    "caja_1": {
-        "imagen": "images\\cajas\\normal.png",
-        "dimensiones": [
-            80,
-            80
-        ],
-        "ubicacion": [
-            640,
-            250
-        ]
-    },
-    "caja_2": {
-        "imagen": "images\\cajas\\normal.png",
-        "dimensiones": [
-            80,
-            80
-        ],
-        "ubicacion": [
-            120,
-            145
-        ]
+    "Nivel_2": {
+        "Piso": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                900,
+                70
+            ],
+            "ubicacion": [
+                0,
+                530
+            ]
+        },
+        "Plataforma_1": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                230,
+                60
+            ],
+            "ubicacion": [
+                0,
+                430
+            ]
+        },
+        "Plataforma_2": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                230,
+                60
+            ],
+            "ubicacion": [
+                335,
+                430
+            ]
+        },
+        "Plataforma_3": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                230,
+                60
+            ],
+            "ubicacion": [
+                670,
+                430
+            ]
+        },
+        "Plataforma_4": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                580,
+                60
+            ],
+            "ubicacion": [
+                160,
+                340
+            ]
+        },
+        "Plataforma_5": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                300,
+                60
+            ],
+            "ubicacion": [
+                0,
+                200
+            ]
+        },
+        "Plataforma_6": {
+            "imagen": "images\\pisos\\piso_2.png",
+            "dimensiones": [
+                300,
+                60
+            ],
+            "ubicacion": [
+                600,
+                200
+            ]
+        },
+        "caja_1": {
+            "imagen": "images\\cajas\\caja_nivel2.png",
+            "dimensiones": [
+                90,
+                90
+            ],
+            "ubicacion": [
+                370,
+                250
+            ]
+        },
+        "caja_2": {
+            "imagen": "images\\cajas\\caja_nivel2.png",
+            "dimensiones": [
+                90,
+                90
+            ],
+            "ubicacion": [
+                460,
+                250
+            ]
+        }
     }
 }

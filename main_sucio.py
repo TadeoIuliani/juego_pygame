@@ -22,18 +22,20 @@ pygame.display.set_caption("Juego Practica")
 path_caja = caja["imagen"]
 path_caja = "images\cajas\caja_nivel2.png"
 
-piso = Piso("images\pisos\piso_2.png", (ANCHO, 70), (0, 500))
+piso = Piso("images\pisos\piso_2.png", (ANCHO, 70), (0, 530))
 
 plataforma_1 = Piso("images\pisos\piso_2.png", (230, 60), (0, 430))
 plataforma_2 = Piso("images\pisos\piso_2.png", (230, 60), (335, 430))
+
 plataforma_3 = Piso("images\pisos\piso_2.png", (230, 60), (670, 430))
 
 plataforma_4 = Piso("images\pisos\piso_2.png", (580, 60), (160, 340))
-plataforma_5 = Piso("images\pisos\piso_2.png", (300, 60), (0, 250))
-plataforma_6 = Piso("images\pisos\piso_2.png", (300, 60), (600, 250))
 
-caja = Piso(path_caja, (90, 90), (370, 200))
-caja_2 = Piso(path_caja, (90, 90), (370+90, 200))
+plataforma_5 = Piso("images\pisos\piso_2.png", (300, 60), (0, 200))
+plataforma_6 = Piso("images\pisos\piso_2.png", (300, 60), (600, 200))
+
+caja = Piso(path_caja, (90, 90), (370, 250))
+caja_2 = Piso(path_caja, (90, 90), (460, 250))
 cajas = [caja, caja_2]
 plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5, plataforma_6]
 
@@ -62,45 +64,6 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    #     if event.type == pygame.KEYDOWN:
-    #         if event.key == pygame.K_TAB:
-    #             mostrar = not mostrar
-
-    # if rect_izquierda.collidepoint(mouse):
-    #     if mouse[0] < 400 and vida_bala == False:
-    #         enemigo.estado = "atacar_izquierda"
-    #         bala = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
-    #         vida_bala = True
-
-    #     elif vida_bala == False:
-    #         enemigo.estado = "atacar_derecha"
-    #         bala = Laser(r"images\Ice Particle.png", enemigo.rect.midright, True)
-    #         vida_bala = True
-    # else: 
-    #     if enemigo.lados["bottom"].colliderect(piso.rect):
-    #         enemigo.lados["bottom"].top = piso.lados["top"].top + 4
-    #         enemigo.esta_cayendo = False
-
-    #     if enemigo.estado == "atacar_derecha":
-    #         enemigo.estado = "izquierda"
-    #     elif enemigo.estado == "atacar_izquierda":
-    #         enemigo.estado = "derecha"
-
-    # if vida_bala:
-    #     if bala.rect.x < 0 or bala.rect.x > ANCHO:
-    #         vida_bala = False
-
-    # pantalla.blit(fondo, (0, 0))
-
-    # pantalla.blit(piso.image, piso.rect)
-    # enemigo.update(pantalla)
-    # if mostrar:
-    #     for lado in enemigo.lados:
-    #         pygame.draw.rect(pantalla, ROJO, enemigo.lados[lado], 2)
-    #         pygame.draw.rect(pantalla, AMARILLO, rect_izquierda, 2)
-    #     # pygame.draw.rect(pantalla, ROJO, )
-    # if vida_bala:
-    #     bala.update(pantalla)
 
     juego.play(eventos)
     pygame.display.flip()
