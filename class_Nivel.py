@@ -214,7 +214,7 @@ class Nivel:
 
         for sapo in self.lista_sapos:
             sapo.update(self.pantalla)
-        
+        print(self.tiempo_actual)
         pygame.display.flip()
 
 
@@ -232,6 +232,9 @@ class Nivel:
             for sapo in self.lista_sapos:
                 sapo.velocidad = 5
 
+        # tiempo_pausa = self.tiempo_actual
+        # if tiempo_pausa < self.tiempo_actual:
+        #     self.tiempo_actual += 1
 
     def get_estado_juego(self):
         if self.fin_juego:

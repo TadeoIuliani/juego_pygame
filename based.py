@@ -49,6 +49,8 @@ def traer_ranking(bd, nivel):
     if cursor != None:
         return cursor
 
-# ret = traer_ranking("ranking.db", 1)
-# for fila in ret:
-#     print(fila)
+def resetear_juego(bd):
+    conectar_y_ejecutar(bd, "delete from nivel_1")
+    conectar_y_ejecutar(bd, "delete from nivel_2")
+    conectar_y_ejecutar(bd, "delete from nivel_3")
+    

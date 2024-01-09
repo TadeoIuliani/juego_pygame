@@ -10,22 +10,25 @@ from class_Plataforma import Plataforma
 from class_Bottom import *
 from class_Nivel import * 
 from class_Nivel2 import * 
-from textbox import TextBox
+from textbox import *
 import json
 from based import *
 
 class Game():
-    def __init__(self, pantalla) -> None:
+    def __init__(self, pantalla, bd) -> None:
         pygame.font.init()
         self.pantalla = pantalla
         self.estado_juego = "inicio"
         self.on = True
         self.puntuacion = 0
         self.nivel_seleccionado = None
+        self.base_datos = bd
         #menu---------------------------------------------------------------------------
-        self.Fuente_user = pygame.font.SysFont("Copperplate Gothic", 20)
+        self.Fuente_user = pygame.font.SysFont("Copperplate Gothic", 50)
+        self.Fuente_ranking = pygame.font.SysFont("Copperplate Gothic", 30)
         self.rectangulo_user = pygame.Rect(350, 300, 100, 60)
-        self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 10)
+        self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 6)
+        self.resetear_juego = Bottom("images\BOTONES\pngwing.com (13).png", 800, 50, (50, 50))
         self.user = None
         self.logo_inicio = pygame.image.load(r"images\BOTONES\Crash_bandicoot_logo_by_jerimiahisaiah.png")
         self.logo_inicio = pygame.transform.scale(self.logo_inicio, (500, 200))
@@ -53,13 +56,14 @@ class Game():
         self.logo_player = pygame.image.load(r"images\BOTONES\kisspng-user-silhouette-simplicity-vector-5b52f75d202791.0292972215321639331317.png")
         self.logo_player = pygame.transform.scale(self.logo_player, (40, 40))
         #Pausa-----------------------------------------------------------------------------
+        self.fuente_pause = pygame.font.SysFont("Cooper", 40)
         self.boton_pausa = Bottom("images\BOTONES\pausa_boton.png", 390, 300, (135, 120))
         self.boton_mas_musica = Bottom(r"images\BOTONES\boton_mas.png", 550, 190, (40, 40))
         self.boton_menos_musica = Bottom(r"images\BOTONES\boton_menos.png", 500, 190, (40, 40))
-
         self.boton_mas_sonido = Bottom(r"images\BOTONES\boton_mas.png", 550, 240, (40, 40))
         self.boton_menos_sonido = Bottom(r"images\BOTONES\boton_menos.png", 500, 240, (40, 40))
         #---------------------------------------------------------------------------------
+        pygame.mixer.init()
         pygame.mixer.music.load("sounds\musica-espera-separador-musical-.mp3")
         pygame.mixer.music.play(-1)
 
@@ -73,6 +77,8 @@ class Game():
                 self.estado_juego = "niveles"
 
             elif self.estado_juego == "niveles":
+                self.nivel_seleccionado = None
+                self.contenedor_niveles = None
                 self.eleccion_nivel()
 
             elif self.estado_juego == "jugando":
@@ -105,7 +111,6 @@ class Game():
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p:
                         pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
-                        # self.control_volumen_musica(False)
                         print("-")
                     elif event.key == pygame.K_F4:
                         pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
@@ -119,6 +124,11 @@ class Game():
             if self.boton_user.is_clicked() == True:
                 self.user = self.txt_user.get_text()
                 self.estado_juego = "menu"
+
+            self.resetear_juego.draw(pantalla)
+            if self.resetear_juego.is_clicked() == True:
+                resetear_juego(self.base_datos)
+
             pygame.display.flip()
 
     def eleccion_nivel(self):
@@ -167,49 +177,67 @@ class Game():
         pygame.mixer.music.load(r"sounds\010607643_prev.mp3")
         pygame.mixer.music.play(1)
         pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
-        ranking_procesado = []
-        UBICACION_PRIMER_PUESTO_LOGO = (280, 200)
-        UBICACION_PRIMER_PUESTO_USER = (400, 200)
-        agregar_regristro("ranking.db", self.nivel_seleccionado, self.user, self.puntuacion)
-        lista_ranking = traer_ranking("ranking.db", self.nivel_seleccionado)
+        UBICACION_PRIMER_PUESTO_LOGO = [280, 200]
+        UBICACION_SEGUNDO_PUESTO_LOGO = [280, 250]
+        UBICACION_TERCER_PUESTO_LOGO = [280, 300]
+        UBICACION_CUARTO_PUESTO_LOGO = [280, 350]
+        UBICACION_PRIMER_PUESTO_USER = pygame.rect.Rect(340, 200, 70, 35)
+        UBICACION_SEGUNDO_PUESTO_USER = pygame.rect.Rect(340, 250, 70, 35)
+        UBICACION_TERCER_PUESTO_USER = pygame.rect.Rect(340, 300, 70, 35)
+        UBICACION_CUARTO_PUESTO_USER = pygame.rect.Rect(340, 350, 70, 35)
+
+        agregar_regristro(self.base_datos, self.nivel_seleccionado, self.user, self.puntuacion)
+        lista_ranking = traer_ranking(self.base_datos, self.nivel_seleccionado)
+
         for lista in lista_ranking:
             print(lista)
-        while True:
+        while self.estado_juego == "gano" or self.estado_juego == "game_over":
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_h:
+                    if event.key == pygame.K_ESCAPE:
+                        print("volver_menu")
                         self.estado_juego = "niveles"
-                        self.contenedor_niveles = None
-            # if resultado:
-            #     pantalla.blit(self.fondo_fin_juego, (0, 0))
-            #     pantalla.blit(self.Fuente_user.render(f"{self.user} /  Puntaje: {puntuacion}", 0, VERDE), (300, 250))
-                
-            # else:
-            #     pantalla.blit(self.fondo_fin_juego, (0, 0))
-            #     pantalla.blit(self.imagen_game_over, (300, 100))
-            #     pantalla.blit(self.Fuente_user.render(f"{self.user} /  Puntaje: {puntuacion}", 0, ROJO), (200, 400))
+                        
             pantalla.fill(COLOR_MENU)
             pantalla.blit(self.fondo_ranking, (250, 100))
-            for usuario in lista_ranking:
-                pantalla.blit(self.logo_player, UBICACION_PRIMER_PUESTO_LOGO)
-                pantalla.blit(self.Fuente_user.render(f"{usuario[0]}   //  {usuario[1]}", 0, NEGRO), (UBICACION_PRIMER_PUESTO_USER))
-            pygame.display.flip()
 
-    def ranking(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    self.estado_juego = "niveles"
-                    break
-
-            pantalla.blit(self.fondo_fin_juego, (0, 0))
-            pantalla.blit(self.Fuente_user.render(f"Proximamente se viene ranking", 0, ROJO), (0, 250))
+            if len(lista_ranking) == 1:
+                user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
+                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                user_surface.draw(self.pantalla)
+            elif len(lista_ranking) == 2:
+                user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
+                user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
+                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
+                user_surface.draw(self.pantalla)
+                user_surface_2.draw(self.pantalla)
+            elif len(lista_ranking) == 3:
+                user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
+                user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
+                user_surface_3 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[2][0]} || {lista_ranking[2][1]}", UBICACION_TERCER_PUESTO_USER, NEGRO)
+                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
+                pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
+                user_surface.draw(self.pantalla)
+                user_surface_2.draw(self.pantalla)
+                user_surface_3.draw(self.pantalla)
+            else:
+                user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
+                user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
+                user_surface_3 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[2][0]} || {lista_ranking[2][1]}", UBICACION_TERCER_PUESTO_USER, NEGRO)
+                user_surface_4 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[3][0]} || {lista_ranking[3][1]}", UBICACION_CUARTO_PUESTO_USER, NEGRO)
+                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
+                pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
+                pantalla.blit(self.logo_player, UBICACION_CUARTO_PUESTO_LOGO)
+                user_surface.draw(self.pantalla)
+                user_surface_2.draw(self.pantalla)
+                user_surface_3.draw(self.pantalla)
+                user_surface_4.draw(self.pantalla)
 
             pygame.display.flip()
 
@@ -270,7 +298,6 @@ class Game():
 
 
     def pausa(self):
-        self.fuente_pause = pygame.font.SysFont("Cooper", 40)
         while self.contenedor_niveles.get_pausa():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -323,5 +350,5 @@ class Game():
 
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
-game = Game(pantalla)
+game = Game(pantalla, "ranking.db")
 game.run()

@@ -1,36 +1,6 @@
 import pygame, sys
 from config import *
 
-pygame.init()
-
-reloj = pygame.time.Clock()
-pantalla = pygame.display.set_mode((800, 600))
-Fuente = pygame.font.SysFont("Segoe Print", 20)
-text = ""
-
-input_rect = pygame.Rect(200, 200, 140, 40)
-
-# while True:
-for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-        pygame.quit()
-        sys.exit()
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_BACKSPACE:
-            text = text[:-1]
-        else:
-            text += event.unicode 
-
-pantalla.fill((45, 158, 196))
-pygame.draw.rect(pantalla, ROJO, input_rect, 2)
-
-palabra = Fuente.render(text, 0, BLANCO)
-
-pantalla.blit(palabra, (input_rect.x + 5, input_rect.y +5))
-input_rect.w = max(100, palabra.get_width() + 10)
-pygame.display.flip()
-
-
 class TextBox():
     def __init__(self, fuente, color, text, rectangulo, color_rectangulo, maximo_letras) -> None:
         self.fuente = fuente
@@ -65,3 +35,20 @@ class TextBox():
     
     def remover_ultima_letra(self):
         return self.text[:-1]
+    
+
+class Label():
+    def __init__(self, fuente, color, text, rectangulo, color_rectangulo) -> None:
+        self.fuente = fuente
+        self.color = color
+        self.text = text
+        self.rect = pygame.Rect(rectangulo)
+        self.color_rect = color_rectangulo
+    
+    def draw(self, pantalla):
+        palabra_surface = self.fuente.render(self.text, 0, self.color)
+        self.rect.w = palabra_surface.get_width() + 10
+        pygame.draw.rect(pantalla, self.color_rect, self.rect, 1)
+        
+        # pantalla.blit(palabra_surface, ((self.rect.x + 5, self.rect.y + 5)))
+        pantalla.blit(palabra_surface, self.rect)
