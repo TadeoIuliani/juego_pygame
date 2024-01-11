@@ -96,6 +96,7 @@ class Enemigo_2(Enemigo):
         self.rect.x, self.rect.y = ubicacion
         self.lados = self.obtener_rectangulos()
         self.laser = None
+        self.gravedad = 0.5
 
     def aplicar_gravedad(self, pantalla):
         return super().aplicar_gravedad(pantalla)

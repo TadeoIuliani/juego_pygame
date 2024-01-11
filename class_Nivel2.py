@@ -19,8 +19,9 @@ class Nivel_2(Nivel):
         self.player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
         self.plataformas = plataformas
         self.cajas = cajas
-        self.prueba = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
-        self.lista_enemigos = [self.prueba]
+        self.camaleon = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
+        self.contador_camaleon = 1
+        self.lista_enemigos = [self.camaleon]
         self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.puntuacion = 0
@@ -38,13 +39,16 @@ class Nivel_2(Nivel):
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_menos_vida = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
+        self.sonido_motosierra = pygame.mixer.Sound(r"sounds\sonido_motosierra.mp3")
         self.reloj = pygame.time.Clock()
         self.cronometro = None
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
+        self.tiempo_pausa = 0
         self.bala_enemigo = None
         self.vida_bala_enemigo = False
         self.rect_tiro = pygame.Rect((0, 300), (ANCHO, 40))
+        self.rect_tiro_2 = pygame.Rect((0, 160), (ANCHO, 40))
         self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (200, 170), True, trampa)
         self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
         self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
@@ -126,7 +130,18 @@ class Nivel_2(Nivel):
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos.remove(enemigo)
 
-                if self.player.rect.colliderect(self.rect_tiro):
+                if self.player.rect.colliderect(self.rect_tiro) and self.contador_camaleon == 1:
+                    if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
+                        enemigo.estado = "atacar_izquierda"
+                        self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
+                        self.vida_bala_enemigo = True
+
+                    elif self.vida_bala_enemigo == False:
+                        enemigo.estado = "atacar_derecha"
+                        self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , True)
+                        self.vida_bala_enemigo = True
+                        
+                elif self.player.rect.colliderect(self.rect_tiro_2) and self.contador_camaleon == 2:
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_izquierda"
                         self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
@@ -142,6 +157,10 @@ class Nivel_2(Nivel):
                     elif enemigo.estado == "atacar_izquierda":
                         enemigo.estado = "derecha"
 
+        elif self.contador_camaleon < 2:
+            self.contador_camaleon += 1
+            self.camaleon = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
+            self.lista_enemigos.append(self.camaleon)
         
         if len(self.lista_enemigos_cangrejos) != 0:
             for enemigo in self.lista_enemigos_cangrejos: 
@@ -173,28 +192,31 @@ class Nivel_2(Nivel):
             self.gano = False
             self.fin_juego = True
 
-        if self.bala_viva:
-            for enemigo in self.lista_enemigos:
-                if enemigo.rect.colliderect(self.laser.rect):
-                    self.sonido_muerte.play()
-                    self.lista_enemigos.remove(enemigo)
-                    self.puntuacion += 100
-                    self.bala_viva = False
-
-            for enemigo in self.lista_enemigos_cangrejos:
-                if enemigo.rect.colliderect(self.laser.rect):
-                    self.sonido_muerte.play()
-                    self.lista_enemigos_cangrejos.remove(enemigo)
-                    self.puntuacion += 100
-                    self.bala_viva = False
-
+        if self.bala_viva: 
+            if len(self.lista_enemigos) != 0:
+                for enemigo in self.lista_enemigos:
+                    if enemigo.rect.colliderect(self.laser.rect):
+                        self.sonido_muerte.play()
+                        self.lista_enemigos.remove(enemigo)
+                        self.puntuacion += 300
+                        self.bala_viva = False
+            
+            if len(self.lista_enemigos_cangrejos) != 0:
+                for enemigo in self.lista_enemigos_cangrejos:
+                    if enemigo.rect.colliderect(self.laser.rect):
+                        self.sonido_muerte.play()
+                        self.lista_enemigos_cangrejos.remove(enemigo)
+                        self.puntuacion += 100
+                        self.bala_viva = False
+        
             if self.laser.rect.x < 0:
                 self.bala_viva = False
-        
+
             if self.laser.rect.x >= ANCHO:
                 self.bala_viva = False
         
         if self.trampa.toco == False and self.trampa.rect.colliderect(self.player.rect):
+            self.sonido_muerte.play()
             self.trampa.toco = True
             self.vidas -= 1
         elif not self.trampa.rect.colliderect(self.player.rect):
@@ -206,11 +228,11 @@ class Nivel_2(Nivel):
 
         self.cronometro = pygame.time.get_ticks() // 1000
         if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro
+            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
         else:
             self.gano = True
             self.fin_juego = True
-        print(self.tiempo_actual)
+        # print(self.tiempo_actual)
 
     def actualizar_pantalla(self):
         self.pantalla.blit(self.fondo, (0, 0))
@@ -234,9 +256,10 @@ class Nivel_2(Nivel):
             for key in self.player.lados:
                 pygame.draw.rect(self.pantalla, AZUL, self.player.lados[key], 2)
 
-            pygame.draw.line(self.pantalla, AZUL, self.prueba.rect.topleft, (0, self.prueba.rect.y))
-            pygame.draw.line(self.pantalla, AZUL, self.prueba.rect.topright, (ANCHO, self.prueba.rect.y))
+            pygame.draw.line(self.pantalla, AZUL, self.camaleon.rect.topleft, (0, self.camaleon.rect.y))
+            pygame.draw.line(self.pantalla, AZUL, self.camaleon.rect.topright, (ANCHO, self.camaleon.rect.y))
             pygame.draw.rect(self.pantalla, AMARILLO, self.rect_tiro, 2)
+            pygame.draw.rect(self.pantalla, ROJO, self.rect_tiro_2, 2)
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
@@ -269,8 +292,12 @@ class Nivel_2(Nivel):
     
     def get_resultado(self):
         return super().get_resultado()
+    
     def set_sonido_activado(self, activado):
         return super().set_sonido_activado(activado)
+    
     def configuracion_sonidos(self):
         return super().configuracion_sonidos()
     
+    def set_cronometro(self, tiempo_pausa):
+        return super().set_cronometro(tiempo_pausa)

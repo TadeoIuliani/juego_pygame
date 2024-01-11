@@ -23,6 +23,10 @@ class Game():
         self.puntuacion = 0
         self.nivel_seleccionado = None
         self.base_datos = bd
+
+        self.cronometro = None
+        self.tiempo_inicial = 0
+        self.tiempo_actual = self.tiempo_inicial
         #menu---------------------------------------------------------------------------
         self.Fuente_user = pygame.font.SysFont("Copperplate Gothic", 50)
         self.Fuente_ranking = pygame.font.SysFont("Copperplate Gothic", 30)
@@ -44,6 +48,7 @@ class Game():
         self.fondo_seleccion_niveles = pygame.transform.scale(self.fondo_seleccion_niveles, (350, 400))
         self.image_crash = pygame.image.load(r"images\Portada\4.png")
         self.image_crash = pygame.transform.scale(self.image_crash, (290, 300))
+        self.fuente_niveles = pygame.font.SysFont("Algerian", 90)
         self.nivel = None
 
         #pantalla_final-----------------------------------------------------------------
@@ -66,11 +71,13 @@ class Game():
         pygame.mixer.init()
         pygame.mixer.music.load("sounds\musica-espera-separador-musical-.mp3")
         pygame.mixer.music.play(-1)
+        self.reloj = pygame.time.Clock
 
 
     def run(self):
         pygame.init()
         while self.on:
+            
             eventos = pygame.event.get()
             if self.estado_juego == "inicio":
                 self.inicio()
@@ -82,6 +89,7 @@ class Game():
                 self.eleccion_nivel()
 
             elif self.estado_juego == "jugando":
+                print(self.contenedor_niveles.tiempo_pausa)
                 self.contenedor_niveles.play(eventos)
                 if self.contenedor_niveles.get_estado_juego() == True:
                     self.puntuacion = self.contenedor_niveles.get_puntuacion()
@@ -91,12 +99,15 @@ class Game():
                         self.estado_juego = "game_over"
                 else:
                     if self.contenedor_niveles.get_pausa():
+                        self.cronometro = None
+                        self.tiempo_inicial = 0
+                        self.tiempo_actual = self.tiempo_inicial
                         self.pausa()
 
             elif self.estado_juego == "gano":
-                self.pantalla_final(self.puntuacion, True)
+                self.pantalla_final(True)
             elif self.estado_juego == "game_over":
-                self.pantalla_final(self.puntuacion, False)
+                self.pantalla_final(False)
 
             else:
                 print("ERROR")
@@ -143,9 +154,12 @@ class Game():
             self.pantalla.blit(self.fondo_seleccion_niveles, (290, 100))
             self.pantalla.blit(self.image_crash, (10, 170))
             self.pantalla.blit(self.image_crash, (630, 170))
-            self.boton_nivel1.draw(pantalla)
-            self.boton_nivel2.draw(pantalla)
-            self.boton_nivel3.draw(pantalla)
+            
+            self.pantalla.blit(self.fuente_niveles.render("NIVELES", 0, NEGRO), (300, 20))
+
+            self.boton_nivel1.draw(self.pantalla)
+            self.boton_nivel2.draw(self.pantalla)
+            self.boton_nivel3.draw(self.pantalla)
 
             if self.boton_nivel1.is_clicked() == True:
                 self.cargar_nivel(1)
@@ -172,20 +186,14 @@ class Game():
                 print("Nivel 3 .....")
             pygame.display.flip()
 
-    def pantalla_final(self, puntuacion, resultado):
+    def pantalla_final(self,resultado):
         pygame.mixer.music.pause()
-        pygame.mixer.music.load(r"sounds\010607643_prev.mp3")
+        if resultado:
+            pygame.mixer.music.load(r"sounds\010564339_prev.mp3")
+        else:
+            pygame.mixer.music.load(r"sounds\010607643_prev.mp3")
         pygame.mixer.music.play(1)
         pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
-        UBICACION_PRIMER_PUESTO_LOGO = [280, 200]
-        UBICACION_SEGUNDO_PUESTO_LOGO = [280, 250]
-        UBICACION_TERCER_PUESTO_LOGO = [280, 300]
-        UBICACION_CUARTO_PUESTO_LOGO = [280, 350]
-        UBICACION_PRIMER_PUESTO_USER = pygame.rect.Rect(340, 200, 70, 35)
-        UBICACION_SEGUNDO_PUESTO_USER = pygame.rect.Rect(340, 250, 70, 35)
-        UBICACION_TERCER_PUESTO_USER = pygame.rect.Rect(340, 300, 70, 35)
-        UBICACION_CUARTO_PUESTO_USER = pygame.rect.Rect(340, 350, 70, 35)
-
         agregar_regristro(self.base_datos, self.nivel_seleccionado, self.user, self.puntuacion)
         lista_ranking = traer_ranking(self.base_datos, self.nivel_seleccionado)
 
@@ -201,27 +209,27 @@ class Game():
                         print("volver_menu")
                         self.estado_juego = "niveles"
                         
-            pantalla.fill(COLOR_MENU)
-            pantalla.blit(self.fondo_ranking, (250, 100))
+            self.pantalla.fill(COLOR_MENU)
+            self.pantalla.blit(self.fondo_ranking, (250, 100))
 
             if len(lista_ranking) == 1:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
-                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
                 user_surface.draw(self.pantalla)
             elif len(lista_ranking) == 2:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
                 user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
-                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
-                pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
                 user_surface.draw(self.pantalla)
                 user_surface_2.draw(self.pantalla)
             elif len(lista_ranking) == 3:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
                 user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
                 user_surface_3 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[2][0]} || {lista_ranking[2][1]}", UBICACION_TERCER_PUESTO_USER, NEGRO)
-                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
-                pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
-                pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
                 user_surface.draw(self.pantalla)
                 user_surface_2.draw(self.pantalla)
                 user_surface_3.draw(self.pantalla)
@@ -230,10 +238,10 @@ class Game():
                 user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
                 user_surface_3 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[2][0]} || {lista_ranking[2][1]}", UBICACION_TERCER_PUESTO_USER, NEGRO)
                 user_surface_4 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[3][0]} || {lista_ranking[3][1]}", UBICACION_CUARTO_PUESTO_USER, NEGRO)
-                pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
-                pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
-                pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
-                pantalla.blit(self.logo_player, UBICACION_CUARTO_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
+                self.pantalla.blit(self.logo_player, UBICACION_CUARTO_PUESTO_LOGO)
                 user_surface.draw(self.pantalla)
                 user_surface_2.draw(self.pantalla)
                 user_surface_3.draw(self.pantalla)
@@ -304,37 +312,44 @@ class Game():
                     pygame.quit()
                     sys.exit()
             
-            pantalla.fill(COLOR_MENU)
-            pantalla.blit(self.fondo_seleccion_niveles, (290, 100))
-            pantalla.blit(self.fuente_pause.render("MUSICA", 0, NEGRO), (330, 200))
-            pantalla.blit(self.fuente_pause.render("SONIDO", 0, NEGRO), (330, 250))
+            if self.cronometro == None and (pygame.time.get_ticks() // 1000) > 1:
+                self.tiempo_inicial = self.tiempo_inicial + (pygame.time.get_ticks() // 1000)
+                self.cronometro = pygame.time.get_ticks() // 1000
+            else:
+                self.cronometro = pygame.time.get_ticks() // 1000
+                self.tiempo_actual = (self.tiempo_inicial - self.cronometro) / -1
+            self.pantalla.fill(COLOR_MENU)
+            self.pantalla.blit(self.fondo_seleccion_niveles, (290, 100))
+            self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, NEGRO), (330, 200))
+            self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, NEGRO), (330, 250))
 
-            self.boton_pausa.draw(pantalla)
-            self.boton_mas_musica.draw(pantalla)
-            self.boton_mas_sonido.draw(pantalla)
+            self.boton_pausa.draw(self.pantalla)
+            self.boton_mas_musica.draw(self.pantalla)
+            self.boton_mas_sonido.draw(self.pantalla)
 
-            self.boton_menos_musica.draw(pantalla)
-            self.boton_menos_sonido.draw(pantalla)
+            self.boton_menos_musica.draw(self.pantalla)
+            self.boton_menos_sonido.draw(self.pantalla)
 
             if self.boton_pausa.is_clicked():
                 self.contenedor_niveles.pause = False
 
             if self.boton_mas_musica.is_clicked() == True:
                 self.control_volumen_musica(True)
-                pantalla.blit(self.fuente_pause.render("MUSICA", 0, VERDE), (330, 200))
+                self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, VERDE), (330, 200))
             
             elif self.boton_menos_musica.is_clicked() == True:
                 self.control_volumen_musica(False)
-                pantalla.blit(self.fuente_pause.render("MUSICA", 0, ROJO), (330, 200))
+                self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, ROJO), (330, 200))
 
             elif self.boton_mas_sonido.is_clicked() == True:
                 self.control_volumen_sonido(True)
-                pantalla.blit(self.fuente_pause.render("SONIDO", 0, VERDE), (330, 250))
+                self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, VERDE), (330, 250))
             
             elif self.boton_menos_sonido.is_clicked() == True:
                 self.control_volumen_sonido(False)
-                pantalla.blit(self.fuente_pause.render("SONIDO", 0, ROJO), (330, 250))
-
+                self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, ROJO), (330, 250))
+            
+            self.contenedor_niveles.set_cronometro(int(self.tiempo_actual))
             pygame.display.flip()
 
     def control_volumen_musica(self, control= False):

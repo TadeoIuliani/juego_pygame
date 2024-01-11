@@ -44,6 +44,10 @@ class Nivel:
         self.cronometro = None
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
+        
+
+        self.tiempo_pausa = 0
+
 
 
     def play(self, lista_eventos):
@@ -168,16 +172,16 @@ class Nivel:
             
         if len(self.lista_sapos) == 0:
             self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
-        
-        self.cronometro = pygame.time.get_ticks() // 1000
+
+
         if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro
+            self.cronometro = pygame.time.get_ticks() // 1000
+            self.tiempo_actual = (self.tiempo_inicio - self.cronometro) 
+            if self.tiempo_pausa != 0:
+                self.tiempo_actual = self.tiempo_actual + int(self.tiempo_pausa) 
         else:
             self.gano = True
             self.fin_juego = True
-        # print(self.tiempo_actual)
-
-
 
     def actualizar_pantalla(self):
         self.pantalla.blit(self.fondo, (0, 0))
@@ -203,7 +207,7 @@ class Nivel:
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), (500, 20))
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.tiempo_actual)}", 0, BLANCO), (500, 20))
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)
@@ -214,17 +218,18 @@ class Nivel:
 
         for sapo in self.lista_sapos:
             sapo.update(self.pantalla)
-        print(self.tiempo_actual)
+
         pygame.display.flip()
 
 
-    def pausa(self):    
+    def pausa(self):
         if self.pause:
             self.player.velocidad = 0
             for enemigo in self.lista_enemigos:
                 enemigo.velocidad = 0
             for sapo in self.lista_sapos:
                 sapo.velocidad = 0
+
         else:
             self.player.velocidad = 7
             for enemigo in self.lista_enemigos:
@@ -232,10 +237,7 @@ class Nivel:
             for sapo in self.lista_sapos:
                 sapo.velocidad = 5
 
-        # tiempo_pausa = self.tiempo_actual
-        # if tiempo_pausa < self.tiempo_actual:
-        #     self.tiempo_actual += 1
-
+        
     def get_estado_juego(self):
         if self.fin_juego:
             return True
@@ -274,3 +276,6 @@ class Nivel:
             self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.3)
             self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
             self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
+
+    def set_cronometro(self, tiempo_pausa):
+        self.tiempo_pausa = tiempo_pausa
