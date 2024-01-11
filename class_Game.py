@@ -89,7 +89,7 @@ class Game():
                 self.eleccion_nivel()
 
             elif self.estado_juego == "jugando":
-                print(self.contenedor_niveles.tiempo_pausa)
+                print(self.contenedor_niveles.reset)
                 self.contenedor_niveles.play(eventos)
                 if self.contenedor_niveles.get_estado_juego() == True:
                     self.puntuacion = self.contenedor_niveles.get_puntuacion()
@@ -103,6 +103,9 @@ class Game():
                         self.tiempo_inicial = 0
                         self.tiempo_actual = self.tiempo_inicial
                         self.pausa()
+                    
+                    if self.contenedor_niveles.get_reset():
+                        self.reset()
 
             elif self.estado_juego == "gano":
                 self.pantalla_final(True)
@@ -162,8 +165,8 @@ class Game():
             self.boton_nivel3.draw(self.pantalla)
 
             if self.boton_nivel1.is_clicked() == True:
-                self.cargar_nivel(1)
                 self.nivel_seleccionado = 1
+                self.cargar_nivel()
                 self.estado_juego = "jugando"
                 pygame.mixer.music.pause()
                 pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
@@ -172,8 +175,8 @@ class Game():
                 self.contenedor_niveles = self.nivel
                 
             if self.boton_nivel2.is_clicked() == True:
-                self.cargar_nivel(2)
                 self.nivel_seleccionado = 2
+                self.cargar_nivel()
                 self.estado_juego = "jugando"
                 pygame.mixer.music.pause()
                 pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
@@ -250,12 +253,13 @@ class Game():
             pygame.display.flip()
 
     def reset(self):
-        self.contenedor_niveles = self.contenedor_niveles
+        self.cargar_nivel(self.nivel_seleccionado)
+        self.contenedor_niveles = self.nivel
 
-    def cargar_nivel(self, numero_nivel):
+    def cargar_nivel(self):
         with open('Nivel.json') as file:
             data = json.load(file)
-        if numero_nivel == 1:
+        if self.nivel_seleccionado == 1:
             info_piso = data["Nivel_1"]["Piso"]
             info_plataforma_1 = data["Nivel_1"]["Plataforma_1"]
             info_plataforma_2 = data["Nivel_1"]["Plataforma_2"]
@@ -278,7 +282,7 @@ class Game():
             plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
             self.nivel = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
 
-        elif numero_nivel == 2:
+        elif self.nivel_seleccionado == 2:
             info_piso = data["Nivel_2"]["Piso"]
             info_plataforma_1 = data["Nivel_2"]["Plataforma_1"]
             info_plataforma_2 = data["Nivel_2"]["Plataforma_2"]
@@ -303,7 +307,6 @@ class Game():
             cajas = [caja_1, caja_2]
             plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5, plataforma_6]
             self.nivel = Nivel_2(r"images\Fondos de juego\47792.jpg", plataformas, cajas)
-
 
     def pausa(self):
         while self.contenedor_niveles.get_pausa():

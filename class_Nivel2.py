@@ -50,6 +50,8 @@ class Nivel_2(Nivel):
         self.rect_tiro = pygame.Rect((0, 300), (ANCHO, 40))
         self.rect_tiro_2 = pygame.Rect((0, 160), (ANCHO, 40))
         self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (200, 170), True, trampa)
+        self.trampa_2 = Trampa(r"images\trampa\Off.png", (30, 30), (660, 170), True, trampa)
+        self.trampas = [self.trampa, self.trampa_2]
         self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
         self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
 
@@ -215,12 +217,13 @@ class Nivel_2(Nivel):
             if self.laser.rect.x >= ANCHO:
                 self.bala_viva = False
         
-        if self.trampa.toco == False and self.trampa.rect.colliderect(self.player.rect):
-            self.sonido_muerte.play()
-            self.trampa.toco = True
-            self.vidas -= 1
-        elif not self.trampa.rect.colliderect(self.player.rect):
-            self.trampa.toco = False
+        for trampa in self.trampas:
+            if trampa.toco == False and trampa.rect.colliderect(self.player.rect):
+                self.sonido_muerte.play()
+                trampa.toco = True
+                self.vidas -= 1
+            elif not trampa.rect.colliderect(self.player.rect):
+                trampa.toco = False
 
         if len(self.lista_frutas) == 0:
             self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
@@ -278,7 +281,8 @@ class Nivel_2(Nivel):
         if self.vida_bala_enemigo:
             self.bala_enemigo.update(self.pantalla)
         
-        self.trampa.update(self.pantalla)
+        for trampa in self.trampas:
+            trampa.update(self.pantalla)
         pygame.display.flip()
 
     def get_puntuacion(self):
