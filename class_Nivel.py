@@ -44,9 +44,10 @@ class Nivel:
         self.cronometro = None
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
-        
-
         self.tiempo_pausa = 0
+
+        self.imagen_prueba = pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png").convert_alpha()
+        self.imagen_prueba = pygame.transform.scale(self.imagen_prueba, (150, 130))
 
 
 
@@ -219,6 +220,7 @@ class Nivel:
         for sapo in self.lista_sapos:
             sapo.update(self.pantalla)
 
+        self.pantalla.blit(self.imagen_prueba, (10, 10))
         pygame.display.flip()
 
 

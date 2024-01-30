@@ -305,3 +305,4 @@ class Nivel_2(Nivel):
     
     def set_cronometro(self, tiempo_pausa):
         return super().set_cronometro(tiempo_pausa)
+    

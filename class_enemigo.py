@@ -5,7 +5,6 @@ from config import *
 class Enemigo(pygame.sprite.Sprite):
     def __init__(self, image, tamaño, SPEED, animaciones) -> None:
         super().__init__()
-
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image ,tamaño)
         self.rect = self.image.get_rect()
@@ -82,10 +81,6 @@ class Enemigo(pygame.sprite.Sprite):
             if self.desplazamiento_y + self.gravedad < self.limite_velocidad_caidad:
                 self.desplazamiento_y += self.gravedad
 
-    # def random_coor(self):
-    #     x = random.randrange(40, (90 - 40))
-    #     y = random.randrange(-200, (700 - 100))
-    #     return x, y
 
 
 
@@ -134,3 +129,41 @@ class Enemigo_2(Enemigo):
             self.estado = "atacar_derecha"
         else:
             self.estado = "atacar_izquierda"
+
+
+class Boss(Enemigo_2):
+    def __init__(self, image, tamaño, SPEED, animaciones) -> None:
+        super().__init__(image, tamaño, SPEED, animaciones)
+        self.estado = "quieto"
+        self.esta_saltando = False
+        self.bandera_atacar = False
+    
+    def animar(self, pantalla):
+        return super().animar(pantalla)
+    
+    def atacar(self):
+        self.estado = "saltando"
+    
+    def update(self, pantalla):
+        match self.estado:
+            case "quieto":
+                if not self.esta_saltando:
+                    self.animar(pantalla)
+            case "muerto":
+                if not self.esta_saltando:
+                    self.animar(pantalla)
+            case "saltando":
+                if not self.esta_saltando:
+                    self.animar(pantalla)
+        self.aplicar_gravedad(pantalla)
+    
+    def aplicar_gravedad(self, pantalla):
+        if self.esta_saltando:
+            self.animar(pantalla)
+            for lado in self.lados:
+                self.lados[lado].y += self.desplazamiento_y
+            if self.desplazamiento_y + self.gravedad < self.limite_velocidad_caidad:
+                self.desplazamiento_y += self.gravedad
+
+    def get_atacar(self):
+        return self.estado == "saltando"

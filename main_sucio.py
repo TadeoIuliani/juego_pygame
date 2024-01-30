@@ -10,6 +10,7 @@ from class_Plataforma import Plataforma
 from class_Bottom import *
 from class_Nivel import *
 from class_Nivel2 import Nivel_2
+from class_Nivel3 import *
 
 
 pygame.init()
@@ -42,7 +43,7 @@ plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, pla
 Fuente = pygame.font.SysFont("Segoe Print", 30)
 
 
-juego = Nivel_2(r"images\Fondos de juego\47792.jpg", plataformas, cajas)
+juego = Nivel3(r"images\Fondos de juego\vecteezy_alien-planet-game-background_6316482.jpg", plataformas, cajas)
 
 fondo = pygame.image.load(r"images\Fondos de juego\47792.jpg")
 fondo = pygame.transform.scale(fondo, (TAM_PANTALLA))

@@ -218,3 +218,25 @@ camaleon["atacar_izquierda"] = [
 camaleon["atacar_izquierda"] = reescalar_imagenes(camaleon["atacar_izquierda"], (80, 50))
 
 camaleon["atacar_derecha"] = rotar_imagen(camaleon["atacar_izquierda"], True, False)
+
+
+imagenes_boss = {}
+imagenes_boss["quieto"] = [
+    pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png")
+]
+imagenes_boss["saltando"] = [
+    pygame.image.load(r"images\boss_sprites\sprites_boss_1-removebg-preview.png")
+]
+
+imagenes_boss["muerte"] = [
+    pygame.image.load(r"images\boss_sprites\sprites_boss_1-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_4-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_5-removebg-preview.png")
+]
+
+imagenes_boss["muerte"] = reescalar_imagenes(imagenes_boss["muerte"], (150, 130))
+imagenes_boss["quieto"] = reescalar_imagenes(imagenes_boss["quieto"], (150, 130))
+imagenes_boss["saltando"] = reescalar_imagenes(imagenes_boss["saltando"], (150, 130))
