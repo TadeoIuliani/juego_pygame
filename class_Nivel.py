@@ -5,7 +5,6 @@ from class_enemigo import *
 from class_item import *
 from class_Piso import *
 from class_sapo import Sapo
-from main_cronometro import Cronometro
 from config import *
 from imagenes import *
 from config import *
@@ -34,7 +33,6 @@ class Nivel:
         self.fin_juego = False
         self.pause = False
         self.reset = False
-        self.sonidos_activados = True
         pygame.mixer.init()
         self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
@@ -46,22 +44,15 @@ class Nivel:
         self.tiempo_actual = self.tiempo_inicio
         self.tiempo_pausa = 0
 
-        self.imagen_prueba = pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png").convert_alpha()
-        self.imagen_prueba = pygame.transform.scale(self.imagen_prueba, (150, 130))
-
-
-
     def play(self, lista_eventos):
         self.reloj.tick(30)
         if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
             self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
             self.cronometro = pygame.time.get_ticks() // 1000
-        self.configuracion_sonidos()
         self.leer_inputs(lista_eventos)
         self.pausa()
         self.collisiones()
         self.actualizar_pantalla()  
-
 
     def leer_inputs(self, lista_eventos):
         for event in lista_eventos:
@@ -220,7 +211,6 @@ class Nivel:
         for sapo in self.lista_sapos:
             sapo.update(self.pantalla)
 
-        self.pantalla.blit(self.imagen_prueba, (10, 10))
         pygame.display.flip()
 
 
@@ -267,8 +257,8 @@ class Nivel:
     def set_sonido_activado(self, activado):
         self.sonidos_activados = activado
 
-    def configuracion_sonidos(self):
-        if self.sonidos_activados:
+    def configuracion_sonidos(self, volumen):
+        if volumen:
             self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() + 0.3)
             self.sonido_item.set_volume(self.sonido_item.get_volume() + 0.3)
             self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() + 0.3)

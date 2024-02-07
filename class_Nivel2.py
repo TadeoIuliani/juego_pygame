@@ -3,8 +3,6 @@ from class_Player import *
 from class_enemigo import *
 from class_item import *
 from class_Piso import *
-from class_sapo import Sapo
-from main_cronometro import Cronometro
 from class_Nivel import *
 from config import *
 from imagenes import *
@@ -19,9 +17,9 @@ class Nivel_2(Nivel):
         self.player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
         self.plataformas = plataformas
         self.cajas = cajas
-        self.camaleon = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
+        self.enemigo_dispara = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.contador_camaleon = 1
-        self.lista_enemigos = [self.camaleon]
+        self.lista_enemigos = [self.enemigo_dispara]
         self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.puntuacion = 0
@@ -59,11 +57,9 @@ class Nivel_2(Nivel):
 
     def play(self, lista_eventos):
         self.reloj.tick(30)
-
         if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
             self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
             self.cronometro = pygame.time.get_ticks() // 1000
-
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.actualizar_pantalla() 
@@ -161,8 +157,8 @@ class Nivel_2(Nivel):
 
         elif self.contador_camaleon < 2:
             self.contador_camaleon += 1
-            self.camaleon = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
-            self.lista_enemigos.append(self.camaleon)
+            self.enemigo_dispara = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
+            self.lista_enemigos.append(self.enemigo_dispara)
         
         if len(self.lista_enemigos_cangrejos) != 0:
             for enemigo in self.lista_enemigos_cangrejos: 
@@ -235,7 +231,6 @@ class Nivel_2(Nivel):
         else:
             self.gano = True
             self.fin_juego = True
-        # print(self.tiempo_actual)
 
     def actualizar_pantalla(self):
         self.pantalla.blit(self.fondo, (0, 0))
@@ -259,8 +254,8 @@ class Nivel_2(Nivel):
             for key in self.player.lados:
                 pygame.draw.rect(self.pantalla, AZUL, self.player.lados[key], 2)
 
-            pygame.draw.line(self.pantalla, AZUL, self.camaleon.rect.topleft, (0, self.camaleon.rect.y))
-            pygame.draw.line(self.pantalla, AZUL, self.camaleon.rect.topright, (ANCHO, self.camaleon.rect.y))
+            pygame.draw.line(self.pantalla, AZUL, self.enemigo_dispara.rect.topleft, (0, self.enemigo_dispara.rect.y))
+            pygame.draw.line(self.pantalla, AZUL, self.enemigo_dispara.rect.topright, (ANCHO, self.enemigo_dispara.rect.y))
             pygame.draw.rect(self.pantalla, AMARILLO, self.rect_tiro, 2)
             pygame.draw.rect(self.pantalla, ROJO, self.rect_tiro_2, 2)
 
@@ -298,11 +293,20 @@ class Nivel_2(Nivel):
         return super().get_resultado()
     
     def set_sonido_activado(self, activado):
-        return super().set_sonido_activado(activado)
+        self.sonidos_activados = activado
     
-    def configuracion_sonidos(self):
-        return super().configuracion_sonidos()
-    
+    def configuracion_sonidos(self, volumen):
+        if volumen:
+            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() + 0.3)
+            self.sonido_item.set_volume(self.sonido_item.get_volume() + 0.3)
+            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() + 0.3)
+            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() + 0.3)
+        else:
+            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() - 0.3)
+            self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.3)
+            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
+            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
+
     def set_cronometro(self, tiempo_pausa):
         return super().set_cronometro(tiempo_pausa)
     

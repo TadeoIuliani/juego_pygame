@@ -20,11 +20,6 @@ class Piso(pygame.sprite.Sprite):
         diccionario["top"] = pygame.Rect(principal.left, principal.top, principal.width, 8)
         return diccionario
 
-    def update(self, pantalla) -> None:
-        pass
-
-
-
 class Trampa(Piso):
     def __init__(self, image, tamaño, ubicacion, estado, animaciones):
         super().__init__(image, tamaño, ubicacion)

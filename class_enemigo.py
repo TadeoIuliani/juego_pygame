@@ -85,13 +85,18 @@ class Enemigo(pygame.sprite.Sprite):
 
 
 class Enemigo_2(Enemigo):
-    def __init__(self, image, tamaño, SPEED, animaciones, ubicacion) -> None:
+    def __init__(self, image, tamaño, SPEED, animaciones, ubicacion = None) -> None:
         super().__init__(image, tamaño, SPEED, animaciones)
         self.estado = "cayendo"
-        self.rect.x, self.rect.y = ubicacion
+        if ubicacion == None:
+            self.rect.x = random.randint(100, ANCHO)
+            self.rect.y = random.randint(-100, ALTO - 200)
+        else:
+            self.rect.x, self.rect.y = ubicacion
         self.lados = self.obtener_rectangulos()
         self.laser = None
         self.gravedad = 0.5
+        self.rect_tiro = pygame.rect.Rect((0 ,self.rect.y), (ANCHO, 40))
 
     def aplicar_gravedad(self, pantalla):
         return super().aplicar_gravedad(pantalla)
@@ -123,6 +128,8 @@ class Enemigo_2(Enemigo):
                 self.mover()
         if self.esta_cayendo:
             self.aplicar_gravedad(pantalla)
+        self.rect_tiro = pygame.rect.Rect((0 ,self.rect.y), (ANCHO, 40))
+
     
     def atacar(self, derecha: bool):
         if derecha:
@@ -131,18 +138,19 @@ class Enemigo_2(Enemigo):
             self.estado = "atacar_izquierda"
 
 
-class Boss(Enemigo_2):
-    def __init__(self, image, tamaño, SPEED, animaciones) -> None:
-        super().__init__(image, tamaño, SPEED, animaciones)
+class Boss(Personaje):
+    def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict) -> None:
+        super().__init__(tamaño, coor, imagen, velocidad, animaciones)
         self.estado = "quieto"
-        self.esta_saltando = False
-        self.bandera_atacar = False
+        # self.esta_saltando = True
+        # self.potencia_salto = -9
+        # self.limite_velocidad_caidad = 9
     
     def animar(self, pantalla):
-        return super().animar(pantalla)
+        return super().animar_player(pantalla)
     
     def atacar(self):
-        self.estado = "saltando"
+        self.estado = "atacar"
     
     def update(self, pantalla):
         match self.estado:
@@ -152,18 +160,13 @@ class Boss(Enemigo_2):
             case "muerto":
                 if not self.esta_saltando:
                     self.animar(pantalla)
-            case "saltando":
+            case "atacar":
                 if not self.esta_saltando:
-                    self.animar(pantalla)
+                    self.esta_saltando = True
+                    self.desplazamiento_y = self.potencia_salto
         self.aplicar_gravedad(pantalla)
     
     def aplicar_gravedad(self, pantalla):
-        if self.esta_saltando:
-            self.animar(pantalla)
-            for lado in self.lados:
-                self.lados[lado].y += self.desplazamiento_y
-            if self.desplazamiento_y + self.gravedad < self.limite_velocidad_caidad:
-                self.desplazamiento_y += self.gravedad
-
+        return super().aplicar_gravedad(pantalla)
     def get_atacar(self):
-        return self.estado == "saltando"
+        return self.estado == "atacar"

@@ -16,15 +16,6 @@ AMARILLO = (255, 255, 0)
 CELESTE = (0, 255, 255)
 
 COLOR_MENU = (9, 138, 211)
-color_random = []
-color_random.append(ROJO)
-color_random.append(VERDE)
-color_random.append(AZUL)
-color_random.append(BLANCO)
-color_random.append(NARANJA)
-color_random.append(ROSA)
-color_random.append(CELESTE)
-color_random.append(AMARILLO)
 
 FPS = 40
 SPEED = 10
@@ -37,14 +28,14 @@ TAM_CANGRI = (50, 50)
 TAM_ITEM = (30, 30)
 TAM_PANTALLA = (ANCHO, ALTO)
 
-UBICACION_PRIMER_PUESTO_LOGO = [280, 200]
-UBICACION_SEGUNDO_PUESTO_LOGO = [280, 250]
-UBICACION_TERCER_PUESTO_LOGO = [280, 300]
-UBICACION_CUARTO_PUESTO_LOGO = [280, 350]
-UBICACION_PRIMER_PUESTO_USER = pygame.rect.Rect(340, 200, 70, 35)
-UBICACION_SEGUNDO_PUESTO_USER = pygame.rect.Rect(340, 250, 70, 35)
-UBICACION_TERCER_PUESTO_USER = pygame.rect.Rect(340, 300, 70, 35)
-UBICACION_CUARTO_PUESTO_USER = pygame.rect.Rect(340, 350, 70, 35)
+UBICACION_PRIMER_PUESTO_LOGO = [300, 240]
+UBICACION_SEGUNDO_PUESTO_LOGO = [300, 290]
+UBICACION_TERCER_PUESTO_LOGO = [300, 340]
+UBICACION_CUARTO_PUESTO_LOGO = [300, 390]
+UBICACION_PRIMER_PUESTO_USER = pygame.rect.Rect(350, 240, 70, 35)
+UBICACION_SEGUNDO_PUESTO_USER = pygame.rect.Rect(350, 290, 70, 35)
+UBICACION_TERCER_PUESTO_USER = pygame.rect.Rect(350, 340, 70, 35)
+UBICACION_CUARTO_PUESTO_USER = pygame.rect.Rect(350, 390, 70, 35)
 
 
 
@@ -98,6 +89,20 @@ class GenearadorEnemigos():
             lista.append(object)
         return lista
 
+class GenearadorEnemigos_2(GenearadorEnemigos):
+    def __init__(self, image, tamaño, speed, animaciones, ubicacion) -> None:
+        super().__init__(image, tamaño, speed, animaciones)
+        self.ubicacion = ubicacion
+
+    def generar_enemigos(self, clase, cantidad):
+        lista = []
+        for i in range(cantidad):
+            object = clase(self.image, self.tamaño, self.speed, self.animaciones, self.ubicacion)
+            lista.append(object)
+        return lista
+            
+
+            
 def collision_player_plataformas(player, lista_plataformas):
     for plataforma in lista_plataformas:
         if player.lados["bottom"].colliderect(plataforma.lados["top"]):
@@ -122,8 +127,6 @@ def collision_enemigos_plataformas(enemigos, plataformas):
                     enemigo.estado = "izquierda"
                 elif enemigo.rect.left <= piso.rect.left:
                     enemigo.estado = "derecha"
-            # else:
-            #     enemigo.esta_cayendo = True
 
 def collision_sapo_plataformas(sapos, plataformas):
     for sapo in sapos:

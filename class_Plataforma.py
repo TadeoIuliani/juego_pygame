@@ -22,7 +22,7 @@ class Plataforma(pygame.sprite.Sprite):
         diccionario["left"] = pygame.Rect(principal.left, principal.top, 8, principal.height)
         diccionario["top"] = pygame.Rect(principal.left, principal.top, principal.width, 8)
         return diccionario
-    
+
     def mover(self):
             if self.bandera == True:
                 if self.gravedad == False:
@@ -31,9 +31,6 @@ class Plataforma(pygame.sprite.Sprite):
                 else:
                     for key in self.lados:
                         self.lados[key].y += self.velocidad
-
-
-    
 
     def update(self, pantalla):
         if self.bandera:

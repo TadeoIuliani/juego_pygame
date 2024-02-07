@@ -4,7 +4,6 @@ from class_enemigo import *
 from class_item import *
 from class_Piso import *
 from class_sapo import Sapo
-from main_cronometro import Cronometro
 from class_Nivel import *
 from config import *
 from imagenes import *
@@ -19,17 +18,14 @@ class Nivel_2():
         self.player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
         self.plataformas = plataformas
         self.cajas = cajas
-      
         self.prueba = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.lista_enemigos = [self.prueba]
-
         self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.puntuacion = 0
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
         self.bala_viva = False
         self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
-        # self.laser_enemigo = Laser(r"images\Ice Particle.png", self.prueba.rect.bottomleft, 15)
         self.rectangulos_prog = False
         self.gano = None
         self.fin_juego = False
@@ -45,20 +41,16 @@ class Nivel_2():
         self.cronometro = None
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
-
         self.bala_enemigo = None
         self.vida_bala_enemigo = False
         self.rect_tiro = pygame.Rect((0, 300), (ANCHO, 40))
-
         self.trampa = Trampa(r"images\trampa\Off.png", (60, 60), (300, 100), True, trampa)
     
     def play(self, lista_eventos):
         self.reloj.tick(30)
-
         if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
             self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
             self.cronometro = pygame.time.get_ticks() // 1000
-
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.actualizar_pantalla() 
@@ -81,8 +73,6 @@ class Nivel_2():
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
                     self.rectangulos_prog = not self.rectangulos_prog
-                    # for enemigo in self.lista_enemigos:
-                    #     enemigo.atacar(True)
                 elif event.key == pygame.K_r:
                     self.reset = True
                 elif event.key == pygame.K_p:
@@ -220,8 +210,6 @@ class Nivel_2():
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
         self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), (500, 20))
 
-        # for enemigo in self.lista_enemigos:
-        #     enemigo.update(self.pantalla)
         self.prueba.update(self.pantalla)
         self.player.update(self.pantalla)
         if self.bala_viva:
@@ -229,8 +217,6 @@ class Nivel_2():
 
         if self.vida_bala_enemigo:
             self.bala_enemigo.update(self.pantalla)
-        # for sapo in self.lista_sapos:
-        #     sapo.update(self.pantalla)
         
         self.trampa.update(self.pantalla)
         pygame.display.flip()

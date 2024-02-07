@@ -4,13 +4,11 @@ import pygame
 class Personaje(pygame.sprite.Sprite):
     def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict) -> None:
         super().__init__()
-
         self.image = pygame.image.load(imagen).convert_alpha()
         self.image = pygame.transform.scale(self.image, tamaño)
         self.rect = self.image.get_rect()
         self.rect.center = coor
         self.lados = self.obtener_rectangulos()
-
         # ---------------------------------------------------
         self.contador_pasos = 0
         self.estado = "quieto"
@@ -37,7 +35,6 @@ class Personaje(pygame.sprite.Sprite):
         if self.contador_pasos >= len(self.animaciones[self.estado]):
             self.contador_pasos = 0
         pantalla.blit(self.animaciones[self.estado][self.contador_pasos], self.rect)
-        # pygame.time.delay(30)
         self.contador_pasos += 1
 
     def mover(self):

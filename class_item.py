@@ -52,18 +52,10 @@ class Item(pygame.sprite.Sprite):
         diccionario = {}
         principal = self.rect
         diccionario["main"] = principal
-        diccionario["bottom"] = pygame.Rect(
-            principal.left, principal.bottom - 9, principal.width, 9
-        )
-        diccionario["right"] = pygame.Rect(
-            principal.right - 4, principal.top, 4, principal.height
-        )
-        diccionario["left"] = pygame.Rect(
-            principal.left, principal.top, 4, principal.height
-        )
-        diccionario["top"] = pygame.Rect(
-            principal.left, principal.top, principal.width, 9
-        )
+        diccionario["bottom"] = pygame.Rect(principal.left, principal.bottom - 9, principal.width, 9)
+        diccionario["right"] = pygame.Rect(principal.right - 4, principal.top, 4, principal.height)
+        diccionario["left"] = pygame.Rect(principal.left, principal.top, 4, principal.height)
+        diccionario["top"] = pygame.Rect(principal.left, principal.top, principal.width, 9)
         return diccionario
 
     def random_coor(self):

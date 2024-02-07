@@ -10,6 +10,7 @@ from class_Plataforma import Plataforma
 from class_Bottom import *
 from class_Nivel import * 
 from class_Nivel2 import * 
+from class_Nivel3 import * 
 from textbox import *
 import json
 from based import *
@@ -31,7 +32,7 @@ class Game():
         self.Fuente_user = pygame.font.SysFont("Copperplate Gothic", 50)
         self.Fuente_ranking = pygame.font.SysFont("Copperplate Gothic", 30)
         self.rectangulo_user = pygame.Rect(350, 300, 100, 60)
-        self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 6)
+        self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 5)
         self.resetear_juego = Bottom("images\BOTONES\pngwing.com (13).png", 800, 50, (50, 50))
         self.user = None
         self.logo_inicio = pygame.image.load(r"images\BOTONES\Crash_bandicoot_logo_by_jerimiahisaiah.png")
@@ -52,14 +53,16 @@ class Game():
         self.nivel = None
 
         #pantalla_final-----------------------------------------------------------------
-        self.imagen_game_over = pygame.image.load("images\pngegg.png")
-        self.imagen_game_over = pygame.transform.scale(self.imagen_game_over, (250, 150))
         self.fondo_fin_juego = pygame.image.load("images\Fondos de juego\Fondo de juego.jpg")
         self.fondo_fin_juego = pygame.transform.scale(self.fondo_fin_juego, (ANCHO, ALTO))
         self.fondo_ranking = pygame.image.load(r"images\BOTONES\tabla_clasificacion.png")
-        self.fondo_ranking = pygame.transform.scale(self.fondo_ranking, (370, 450))
+        self.fondo_ranking = pygame.transform.scale(self.fondo_ranking, (370, 400))
         self.logo_player = pygame.image.load(r"images\BOTONES\kisspng-user-silhouette-simplicity-vector-5b52f75d202791.0292972215321639331317.png")
         self.logo_player = pygame.transform.scale(self.logo_player, (40, 40))
+        self.logo_win = pygame.image.load("images\Fondos de juego\win_logo.png")
+        self.logo_win = pygame.transform.scale(self.logo_win, (400, 170))
+        self.logo_game_over = pygame.image.load("images\Fondos de juego\game_over.png")
+        self.logo_game_over = pygame.transform.scale(self.logo_game_over, (340, 120))
         #Pausa-----------------------------------------------------------------------------
         self.fuente_pause = pygame.font.SysFont("Cooper", 40)
         self.boton_pausa = Bottom("images\BOTONES\pausa_boton.png", 390, 300, (135, 120))
@@ -77,8 +80,15 @@ class Game():
     def run(self):
         pygame.init()
         while self.on:
-            
             eventos = pygame.event.get()
+            teclas_presionadas = pygame.key.get_pressed()
+            if teclas_presionadas[pygame.K_F3]:
+                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
+                print("-")
+            elif teclas_presionadas[pygame.K_F4]:
+                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
+                print("+")
+
             if self.estado_juego == "inicio":
                 self.inicio()
                 self.estado_juego = "niveles"
@@ -89,7 +99,8 @@ class Game():
                 self.eleccion_nivel()
 
             elif self.estado_juego == "jugando":
-                print(self.contenedor_niveles.reset)
+                # print(self.contenedor_niveles.reset)
+                print(self.contenedor_niveles.sonido_disparo.get_volume())
                 self.contenedor_niveles.play(eventos)
                 if self.contenedor_niveles.get_estado_juego() == True:
                     self.puntuacion = self.contenedor_niveles.get_puntuacion()
@@ -122,14 +133,7 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_p:
-                        pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
-                        print("-")
-                    elif event.key == pygame.K_F4:
-                        pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
-                        print("+")
-                
+            
             self.pantalla.fill(COLOR_MENU)
             self.pantalla.blit(self.logo_inicio, (200, 50))
             self.txt_user.draw(self.pantalla, pygame.event.get())
@@ -142,7 +146,6 @@ class Game():
             self.resetear_juego.draw(pantalla)
             if self.resetear_juego.is_clicked() == True:
                 resetear_juego(self.base_datos)
-
             pygame.display.flip()
 
     def eleccion_nivel(self):
@@ -179,21 +182,27 @@ class Game():
                 self.cargar_nivel()
                 self.estado_juego = "jugando"
                 pygame.mixer.music.pause()
-                pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
-                pygame.mixer.music.play(1)
+                pygame.mixer.music.load("sounds\sonic-sth_OcGsuVMq.mp3")
+                pygame.mixer.music.play(-1)
                 pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
                 self.contenedor_niveles = self.nivel
 
             if self.boton_nivel3.is_clicked() == True:
                 self.nivel_seleccionado = 3
-                print("Nivel 3 .....")
+                self.cargar_nivel()
+                self.estado_juego = "jugando"
+                pygame.mixer.music.pause()
+                pygame.mixer.music.load(r"sounds\ringtones-super-mario-bros.mp3")
+                pygame.mixer.music.play(-1)
+                pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
+                self.contenedor_niveles = self.nivel
             pygame.display.flip()
 
     def pantalla_final(self,resultado):
         pygame.mixer.music.pause()
-        if resultado:
+        if self.estado_juego == "gano":
             pygame.mixer.music.load(r"sounds\010564339_prev.mp3")
-        else:
+        elif self.estado_juego == "game_over":
             pygame.mixer.music.load(r"sounds\010607643_prev.mp3")
         pygame.mixer.music.play(1)
         pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
@@ -213,7 +222,11 @@ class Game():
                         self.estado_juego = "niveles"
                         
             self.pantalla.fill(COLOR_MENU)
-            self.pantalla.blit(self.fondo_ranking, (250, 100))
+            self.pantalla.blit(self.fondo_ranking, (260, 150))
+            if self.estado_juego == "gano":
+                self.pantalla.blit(self.logo_win, (250, 0))
+            elif self.estado_juego == "game_over":
+                self.pantalla.blit(self.logo_game_over, (270, 20))
 
             if len(lista_ranking) == 1:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
@@ -253,7 +266,7 @@ class Game():
             pygame.display.flip()
 
     def reset(self):
-        self.cargar_nivel(self.nivel_seleccionado)
+        self.cargar_nivel()
         self.contenedor_niveles = self.nivel
 
     def cargar_nivel(self):
@@ -308,13 +321,30 @@ class Game():
             plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5, plataforma_6]
             self.nivel = Nivel_2(r"images\Fondos de juego\47792.jpg", plataformas, cajas)
 
+        elif self.nivel_seleccionado == 3:
+            info_piso = data["Nivel_3"]["Piso"]
+            info_plataforma_1 = data["Nivel_3"]["Plataforma_1"]
+            info_plataforma_2 = data["Nivel_3"]["Plataforma_2"]
+            info_plataforma_3 = data["Nivel_3"]["Plataforma_3"]
+            info_plataforma_4 = data["Nivel_3"]["Plataforma_4"]
+            info_plataforma_5 = data["Nivel_3"]["Plataforma_5"]
+            piso = Piso(info_piso["imagen"], info_piso["dimensiones"], info_piso["ubicacion"])
+            plataforma_1 = Piso(info_plataforma_1["imagen"], info_plataforma_1["dimensiones"], info_plataforma_1["ubicacion"])
+            plataforma_2 = Piso(info_plataforma_2["imagen"], info_plataforma_2["dimensiones"], info_plataforma_2["ubicacion"])
+            plataforma_3 = Piso(info_plataforma_3["imagen"], info_plataforma_3["dimensiones"], info_plataforma_3["ubicacion"])
+            plataforma_4 = Piso(info_plataforma_4["imagen"], info_plataforma_4["dimensiones"], info_plataforma_4["ubicacion"])
+            plataforma_5 = Piso(info_plataforma_5["imagen"], info_plataforma_5["dimensiones"], info_plataforma_5["ubicacion"])
+            cajas = []
+            plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5]
+            self.nivel = Nivel3(r"images\Fondos de juego\vecteezy_alien-planet-game-background_6316482.jpg", plataformas, cajas)
+
     def pausa(self):
         while self.contenedor_niveles.get_pausa():
+            print(self.contenedor_niveles.sonido_disparo.get_volume())
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            
             if self.cronometro == None and (pygame.time.get_ticks() // 1000) > 1:
                 self.tiempo_inicial = self.tiempo_inicial + (pygame.time.get_ticks() // 1000)
                 self.cronometro = pygame.time.get_ticks() // 1000
@@ -322,6 +352,7 @@ class Game():
                 self.cronometro = pygame.time.get_ticks() // 1000
                 self.tiempo_actual = (self.tiempo_inicial - self.cronometro) / -1
             self.pantalla.fill(COLOR_MENU)
+            self.pantalla.blit(self.fuente_niveles.render("PAUSA", 0, NEGRO), (310, 20))
             self.pantalla.blit(self.fondo_seleccion_niveles, (290, 100))
             self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, NEGRO), (330, 200))
             self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, NEGRO), (330, 250))
@@ -360,11 +391,10 @@ class Game():
             pygame.mixer.music.set_volume(pygame.mixer.music.get_volume() - 0.01)
         else:
             pygame.mixer.music.set_volume(pygame.mixer.music.get_volume() + 0.01)
-        print(pygame.mixer.music.get_volume())
+        
 
     def control_volumen_sonido(self, control):
-        self.contenedor_niveles.set_sonido_activado(control)
-
+        self.contenedor_niveles.configuracion_sonidos(control)
 
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))

@@ -73,10 +73,6 @@ class Sapo(pygame.sprite.Sprite):
                 if not self.esta_saltando:
                     self.esta_cayendo = True
                     self.estado = "izquierda"
-            # case "salta":
-            #     if not self.esta_saltando:
-            #         self.esta_saltando = True
-            #         self.desplazamiento_y = self.potencia_salto
         if self.esta_saltando:
             self.aplicar_gravedad(pantalla)
     

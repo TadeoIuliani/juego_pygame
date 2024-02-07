@@ -223,9 +223,18 @@ camaleon["atacar_derecha"] = rotar_imagen(camaleon["atacar_izquierda"], True, Fa
 imagenes_boss = {}
 imagenes_boss["quieto"] = [
     pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png"),
     pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png")
 ]
-imagenes_boss["saltando"] = [
+imagenes_boss["atacar"] = [
+    pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_2-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"images\boss_sprites\sprites_boss_1-removebg-preview.png"),
     pygame.image.load(r"images\boss_sprites\sprites_boss_1-removebg-preview.png")
 ]
 
@@ -239,4 +248,33 @@ imagenes_boss["muerte"] = [
 
 imagenes_boss["muerte"] = reescalar_imagenes(imagenes_boss["muerte"], (150, 130))
 imagenes_boss["quieto"] = reescalar_imagenes(imagenes_boss["quieto"], (150, 130))
-imagenes_boss["saltando"] = reescalar_imagenes(imagenes_boss["saltando"], (150, 130))
+imagenes_boss["atacar"] = reescalar_imagenes(imagenes_boss["atacar"], (150, 130))
+
+imagenes_toki = {}
+imagenes_toki["derecha"] = [
+    pygame.image.load("images\sprites_toki\derecha_1.png"),
+    pygame.image.load("images\sprites_toki\derecha_2.png"),
+    pygame.image.load("images\sprites_toki\derecha_3.png"),
+    pygame.image.load("images\sprites_toki\derecha_4.png"),
+    pygame.image.load("images\sprites_toki\derecha_5.png"),
+    pygame.image.load("images\sprites_toki\derecha_6.png"),
+]
+imagenes_toki["derecha"] = reescalar_imagenes(imagenes_toki["derecha"], (50, 50))
+imagenes_toki["izquierda"] = rotar_imagen(imagenes_toki["derecha"], True, False)
+
+imagenes_toki["atacar_derecha"] = [
+    pygame.image.load(r"images\sprites_toki\atacar_derecha_1.png"),
+    pygame.image.load(r"images\sprites_toki\atacar_derecha_2.png"),
+    pygame.image.load(r"images\sprites_toki\atacar_derecha_3.png"),
+    pygame.image.load(r"images\sprites_toki\atacar_derecha_4.png"),
+    pygame.image.load(r"images\sprites_toki\atacar_derecha_5.png"),
+    pygame.image.load(r"images\sprites_toki\atacar_derecha_6.png"),
+]
+imagenes_toki["atacar_derecha"] = reescalar_imagenes(imagenes_toki["atacar_derecha"], (50, 50))
+imagenes_toki["atacar_izquierda"] = rotar_imagen(imagenes_toki["atacar_derecha"], True, False)
+
+imagenes_toki["cayendo"] = [
+    pygame.image.load(r"images\sprites_toki\saltando.png")
+]
+imagenes_toki["cayendo"] = reescalar_imagenes(imagenes_toki["cayendo"], (50, 50))
+

@@ -189,5 +189,73 @@
                 250
             ]
         }
+    },
+    "Nivel_3": {
+        "Piso": {
+            "imagen": "images\\pisos\\piso_3.png",
+            "dimensiones": [
+                900,
+                70
+            ],
+            "ubicacion": [
+                0,
+                530
+            ]
+        },
+        "Plataforma_1": {
+            "imagen": "images\\pisos\\piso_3.png",
+            "dimensiones": [
+                400,
+                60
+            ],
+            "ubicacion": [
+                100,
+                430
+            ]
+        },
+        "Plataforma_2": {
+            "imagen": "images\\pisos\\piso_3.png",
+            "dimensiones": [
+                400,
+                60
+            ],
+            "ubicacion": [
+                0,
+                340
+            ]
+        },
+        "Plataforma_3": {
+            "imagen": "images\\pisos\\piso_3.png",
+            "dimensiones": [
+                400,
+                60
+            ],
+            "ubicacion": [
+                100,
+                240
+            ]
+        },
+        "Plataforma_4": {
+            "imagen": "images\\pisos\\piso_3.png",
+            "dimensiones": [
+                400,
+                60
+            ],
+            "ubicacion": [
+                0,
+                140
+            ]
+        },
+        "Plataforma_5": {
+            "imagen": "images\\pisos\\piso_3.png",
+            "dimensiones": [
+                300,
+                75
+            ],
+            "ubicacion": [
+                600,
+                340
+            ]
+        }
     }
 }
