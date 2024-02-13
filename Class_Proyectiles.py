@@ -21,9 +21,9 @@ class Laser(pygame.sprite.Sprite):
         self.mover()
         pantalla.blit(self.image, self.rect)
 
-class Bomba(Laser):
-    def __init__(self, imagen, coor, velocidad, direccion=True):
-        super().__init__(imagen, coor, velocidad, direccion)
+# class Bomba(Laser):
+#     def __init__(self, imagen, coor, velocidad, direccion=True):
+#         super().__init__(imagen, coor, velocidad, direccion)
     
-    def mover(self):
-        self.rect.y -= self.velocidad
+#     def mover(self):
+#         self.rect.y -= self.velocidad

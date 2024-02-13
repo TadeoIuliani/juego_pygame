@@ -24,7 +24,6 @@ class Game():
         self.puntuacion = 0
         self.nivel_seleccionado = None
         self.base_datos = bd
-
         self.cronometro = None
         self.tiempo_inicial = 0
         self.tiempo_actual = self.tiempo_inicial
@@ -81,14 +80,6 @@ class Game():
         pygame.init()
         while self.on:
             eventos = pygame.event.get()
-            teclas_presionadas = pygame.key.get_pressed()
-            if teclas_presionadas[pygame.K_F3]:
-                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
-                print("-")
-            elif teclas_presionadas[pygame.K_F4]:
-                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
-                print("+")
-
             if self.estado_juego == "inicio":
                 self.inicio()
                 self.estado_juego = "niveles"
@@ -99,7 +90,6 @@ class Game():
                 self.eleccion_nivel()
 
             elif self.estado_juego == "jugando":
-                # print(self.contenedor_niveles.reset)
                 print(self.contenedor_niveles.sonido_disparo.get_volume())
                 self.contenedor_niveles.play(eventos)
                 if self.contenedor_niveles.get_estado_juego() == True:
@@ -134,6 +124,13 @@ class Game():
                     pygame.quit()
                     sys.exit()
             
+            teclas_presionadas = pygame.key.get_pressed()
+            if teclas_presionadas[pygame.K_F3]:
+                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
+                print("-")
+            elif teclas_presionadas[pygame.K_F4]:
+                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
+                print("+")
             self.pantalla.fill(COLOR_MENU)
             self.pantalla.blit(self.logo_inicio, (200, 50))
             self.txt_user.draw(self.pantalla, pygame.event.get())

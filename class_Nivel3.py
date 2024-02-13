@@ -17,12 +17,27 @@ class Nivel3(Nivel_2):
         self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (300, 110), True, trampa)
         self.trampa_2 = Trampa(r"images\trampa\Off.png", (30, 30), (340, 310), True, trampa)
         self.trampas = [self.trampa, self.trampa_2]
+        self.contador_oleadas = 1
+        self.bombas = []
 
     def collisiones(self):
         collision_enemigos_plataformas(self.lista_enemigos, self.plataformas)
         collision_player_plataformas(self.player, self.plataformas)
         collision_player_plataformas(self.boss, self.plataformas)
         collision_player_caja(self.player, self.cajas)
+
+        if len(self.bombas) != 0:
+            for bomba in self.bombas:
+                for plataforma in self.plataformas:
+                    if bomba.rect.colliderect(plataforma.rect):
+                        bomba.esta_cayendo = False
+                        bomba.estado = "explosion"
+                if bomba.rect.colliderect(self.player.rect):
+                        bomba.esta_cayendo = False
+                        bomba.estado = "explosion"
+                        self.vidas -= 1
+                if bomba.get_explosion() == True:
+                    self.bombas.remove(bomba)
 
         if len(self.lista_frutas) != 0:
             for fruta in self.lista_frutas:
@@ -48,23 +63,22 @@ class Nivel3(Nivel_2):
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos.remove(enemigo)
 
-                if self.player.rect.colliderect(enemigo.rect_tiro) and self.contador_camaleon == 1:
+                if self.player.rect.colliderect(enemigo.rect_tiro):
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_izquierda"
                         self.bala_enemigo = Laser(r"images\sprites_toki\fuego_izquierda.png", enemigo.rect.midleft,10 , False)
                         self.vida_bala_enemigo = True
-
                     elif self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_derecha"
                         self.bala_enemigo = Laser(r"images\sprites_toki\fuego_derecha.png", enemigo.rect.midleft,10 , True)
                         self.vida_bala_enemigo = True
-                        
                 else:
                     if enemigo.estado == "atacar_derecha":
                         enemigo.estado = "izquierda"
                     elif enemigo.estado == "atacar_izquierda":
                         enemigo.estado = "derecha"
-        else:
+        elif self.contador_oleadas < 4:
+            self.bombas = crear_objetos_random(Bomba, imagenes_bomba, r"images\klipartz.com.png", (80, 100), 3)
             self.boss.estado = "atacar"
 
         if self.vida_bala_enemigo:
@@ -74,13 +88,6 @@ class Nivel3(Nivel_2):
                 self.vidas -= 1
                 self.vida_bala_enemigo = False
 
-        if self.puntuacion > 2500: 
-            self.gano = True
-            self.fin_juego = True
-
-        if self.vidas < 1:
-            self.gano = False
-            self.fin_juego = True
 
         if self.bala_viva: 
             if len(self.lista_enemigos) != 0:
@@ -108,15 +115,27 @@ class Nivel3(Nivel_2):
         if len(self.lista_frutas) == 0:
             self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
 
+
         self.cronometro = pygame.time.get_ticks() // 1000
         if self.tiempo_actual > 1:
             self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
-        else:
-            self.gano = True
-            self.fin_juego = True
-        
+
         if self.boss.get_atacar() == True:
             self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
+            self.contador_oleadas += 1
+        
+
+        if self.puntuacion > 2500:
+            self.gano = True
+        else:
+            self.gano = False
+
+        if self.contador_oleadas > 3:
+            self.puntuacion = self.puntuacion * self.tiempo_actual 
+            self.gano = True
+            self.fin_juego = True
+        elif self.vidas < 1:
+            self.fin_juego = True
 
 
     def actualizar_pantalla(self):
@@ -156,6 +175,10 @@ class Nivel3(Nivel_2):
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)
+
+        if len(self.bombas) != 0:
+            for bomba in self.bombas:
+                bomba.update(self.pantalla)
 
         self.boss.update(self.pantalla) 
         self.player.update(self.pantalla)

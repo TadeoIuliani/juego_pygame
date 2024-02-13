@@ -278,3 +278,16 @@ imagenes_toki["cayendo"] = [
 ]
 imagenes_toki["cayendo"] = reescalar_imagenes(imagenes_toki["cayendo"], (50, 50))
 
+imagenes_bomba = {}
+imagenes_bomba["cayendo"] = [
+    pygame.image.load(r"images\klipartz.com.png")
+]
+imagenes_bomba["cayendo"] = reescalar_imagenes(imagenes_bomba["cayendo"], (80, 100))
+
+imagenes_bomba["explosion"] = [
+    pygame.image.load(r"images\klipartz.com (1).png"),
+    pygame.image.load(r"images\klipartz.com (1).png"),
+    pygame.image.load(r"images\klipartz.com (1).png"),
+    pygame.image.load(r"images\klipartz.com (1).png")
+]
+imagenes_bomba["explosion"] = reescalar_imagenes(imagenes_bomba["explosion"], (80, 100))

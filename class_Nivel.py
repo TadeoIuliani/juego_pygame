@@ -15,7 +15,7 @@ class Nivel:
         self.pantalla = pygame.display.set_mode((ANCHO, ALTO))
         self.fondo = pygame.image.load(fondo_path) 
         self.fondo = pygame.transform.scale(self.fondo, (ANCHO, ALTO))
-        self.player = Player(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
+        self.player = Personaje(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player)
         self.plataformas = plataformas
         self.cajas = cajas
         self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
@@ -43,6 +43,7 @@ class Nivel:
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
         self.tiempo_pausa = 0
+        self.contador_enemigos = 0
 
     def play(self, lista_eventos):
         self.reloj.tick(30)
@@ -112,6 +113,7 @@ class Nivel:
                     enemigo.toco = True
                     self.vidas -= 1
                     self.sonido_muerte.play()
+                    
                 elif not enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = False
                 
@@ -124,30 +126,26 @@ class Nivel:
                     sapo.toco = True
                     self.vidas -= 1
                     self.sonido_muerte.play()
+                    
                 elif not sapo.rect.colliderect(self.player.rect):
                     sapo.toco = False
                 
 
-        if self.puntuacion > 2500: 
-            self.gano = True
-            self.fin_juego = True
-
-        if self.vidas < 1:
-            self.gano = False
-            self.fin_juego = True
 
         if self.bala_viva:
             for enemigo in self.lista_enemigos:
                 if enemigo.rect.colliderect(self.laser.rect):
                     self.sonido_muerte.play()
                     self.lista_enemigos.remove(enemigo)
-                    self.puntuacion += 100
+                    self.puntuacion += 300
+                    self.contador_enemigos += 1
                     self.bala_viva = False
             for sapo in self.lista_sapos:
                 if sapo.rect.colliderect(self.laser.rect):
                     self.sonido_muerte.play()
                     self.lista_sapos.remove(sapo)
-                    self.puntuacion += 100
+                    self.puntuacion += 300
+                    self.contador_enemigos += 1
                     self.bala_viva = False
             if self.laser.rect.x < 0:
                 self.bala_viva = False
@@ -166,14 +164,26 @@ class Nivel:
             self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
 
 
+        self.cronometro = pygame.time.get_ticks() // 1000
         if self.tiempo_actual > 1:
-            self.cronometro = pygame.time.get_ticks() // 1000
-            self.tiempo_actual = (self.tiempo_inicio - self.cronometro) 
-            if self.tiempo_pausa != 0:
-                self.tiempo_actual = self.tiempo_actual + int(self.tiempo_pausa) 
+            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
+            self.fin_juego = False
         else:
+            self.fin_juego = True
+
+        if self.puntuacion > 2500:
+            self.gano = True
+        else:
+            self.gano = False
+
+        if self.contador_enemigos > 8:
+            self.puntuacion = self.puntuacion * self.tiempo_actual 
             self.gano = True
             self.fin_juego = True
+
+        elif self.vidas < 1:
+            self.fin_juego = True
+
 
     def actualizar_pantalla(self):
         self.pantalla.blit(self.fondo, (0, 0))

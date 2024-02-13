@@ -13,20 +13,20 @@ import sqlite3
 #         print("Se creo correctamente")
 #     except:
 #         print("error !!!")
-    
 
-def agregar_regristro(bd, nivel, usuario, puntaje):
-    if nivel == 1:
-        sentencia = f"""insert into nivel_1(nombre, puntaje) values('{usuario}', {puntaje}) """
-    elif nivel == 2:
-        sentencia = f"""insert into nivel_2(nombre, puntaje) values('{usuario}', {puntaje}) """
-    elif nivel == 3:
-        sentencia = f"""insert into nivel_3(nombre, puntaje) values('{usuario}', {puntaje}) """
+
+SENTENCIA_AGREGAR_REGISTRO = f"INSERT into nivel_"
+SENTENCIA_RETORNAR_RANKING = f"SELECT * from nivel_"
+SENTENCIA_RESETEO_NIVEL = f"DELETE from nivel_"
+
+def agregar_regristro(bd : str, nivel : int, usuario : str, puntaje : int):
+    if nivel > 0 and nivel < 4:
+        sentencia = SENTENCIA_AGREGAR_REGISTRO + f"{nivel}(nombre, puntaje) values('{usuario}', {puntaje})"
     conectar_y_ejecutar(bd, sentencia)
 
 
-def conectar_y_ejecutar(path, sentencia):
-    if sentencia != None:
+def conectar_y_ejecutar(path : str, sentencia : str):
+    if sentencia != None and path != None:
         retorno = []
         conexion = sqlite3.connect(path)
         respuesta = conexion.execute(sentencia)
@@ -34,23 +34,17 @@ def conectar_y_ejecutar(path, sentencia):
             retorno.append(fila)
         conexion.commit()
         conexion.close()
-        
         return retorno
 
-def traer_ranking(bd, nivel):
-    retorno = []
-    if nivel == 1:
-        sentencia = f"""SELECT * from nivel_1 order by puntaje desc limit 4"""
-    elif nivel == 2:
-        sentencia = f"""SELECT * from nivel_2 order by puntaje desc limit 4"""
-    elif nivel == 3:
-        sentencia = f"""SELECT * from nivel_3 order by puntaje desc limit 4"""
+def traer_ranking(bd : str, nivel : int):
+    if nivel > 0 and nivel < 4:
+        sentencia = SENTENCIA_RETORNAR_RANKING + f"{nivel} order by puntaje desc limit 4"
+
     cursor = conectar_y_ejecutar(bd, sentencia)
     if cursor != None:
         return cursor
 
 def resetear_juego(bd):
-    conectar_y_ejecutar(bd, "delete from nivel_1")
-    conectar_y_ejecutar(bd, "delete from nivel_2")
-    conectar_y_ejecutar(bd, "delete from nivel_3")
-    
+    conectar_y_ejecutar(bd, SENTENCIA_RESETEO_NIVEL + "1")
+    conectar_y_ejecutar(bd, SENTENCIA_RESETEO_NIVEL + "2")
+    conectar_y_ejecutar(bd, SENTENCIA_RESETEO_NIVEL + "3")
