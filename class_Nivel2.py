@@ -1,5 +1,5 @@
 import pygame, sys
-from class_Player import *
+from class_Personaje import Personaje
 from class_enemigo import *
 from class_item import *
 from class_Piso import *
@@ -11,18 +11,19 @@ from config import *
 
 class Nivel_2(Nivel):
     def __init__(self, fondo_path, plataformas, cajas) -> None:
+        super().__init__(fondo_path, plataformas, cajas)
         self.pantalla = pygame.display.set_mode((ANCHO, ALTO))
         self.fondo = pygame.image.load(fondo_path) 
         self.fondo = pygame.transform.scale(self.fondo, (ANCHO, ALTO))
         self.player = Personaje(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player)
+        
         self.plataformas = plataformas
         self.cajas = cajas
+        self.plataformas = agregar_lista_a_lista(self.plataformas, self.cajas)
+
         self.enemigo_dispara = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.contador_camaleon = 1
         self.lista_enemigos = [self.enemigo_dispara]
-        self.vidas = 3
-        self.Fuente = pygame.font.SysFont("Segoe Print", 30)
-        self.puntuacion = 0
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
         self.bala_viva = False
         self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
@@ -31,7 +32,7 @@ class Nivel_2(Nivel):
         self.fin_juego = False
         self.pause = False
         self.reset = False
-        self.sonidos_activados = True
+        self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         pygame.mixer.init()
         self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
@@ -39,10 +40,13 @@ class Nivel_2(Nivel):
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
         self.sonido_motosierra = pygame.mixer.Sound(r"sounds\sonido_motosierra.mp3")
         self.reloj = pygame.time.Clock()
+        self.puntuacion = 0
+        self.vidas = 3
         self.cronometro = None
         self.tiempo_inicio = 60
         self.tiempo_actual = self.tiempo_inicio
         self.tiempo_pausa = 0
+
         self.bala_enemigo = None
         self.vida_bala_enemigo = False
         self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (200, 170), True, trampa)
@@ -51,6 +55,9 @@ class Nivel_2(Nivel):
         self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
         self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.contador_enemigos = 0
+        self.objetos_collision_plataformas = [self.player]
+        self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
+        self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos_cangrejos)
 
 
 
@@ -99,10 +106,7 @@ class Nivel_2(Nivel):
             self.player.estado = "quieto"
 
     def collisiones(self):
-        collision_enemigos_plataformas(self.lista_enemigos, self.plataformas)
-        collision_enemigos_plataformas(self.lista_enemigos_cangrejos, self.plataformas)
-        collision_player_plataformas(self.player, self.plataformas)
-        collision_player_caja(self.player, self.cajas)
+        collision_objeto_plataforma(self.objetos_collision_plataformas, self.plataformas)
 
         if len(self.lista_frutas) != 0:
             for fruta in self.lista_frutas:
@@ -113,7 +117,9 @@ class Nivel_2(Nivel):
                 if colision_fruta_otro_objeto(fruta, self.player):
                     self.sonido_item.play()
                     self.lista_frutas.remove(fruta)
-                    self.puntuacion += 200
+                    self.puntuacion += PUNTAJE_FRUTA
+        else:
+            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
 
         if len(self.lista_enemigos) != 0:
             for enemigo in self.lista_enemigos: 
@@ -126,6 +132,7 @@ class Nivel_2(Nivel):
                 
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos.remove(enemigo)
+                    self.objetos_collision_plataformas.remove(enemigo)
 
                 if self.player.rect.colliderect(enemigo.rect_tiro):
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
@@ -146,6 +153,7 @@ class Nivel_2(Nivel):
             self.contador_camaleon += 1
             self.enemigo_dispara = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
             self.lista_enemigos.append(self.enemigo_dispara)
+            self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         
         if len(self.lista_enemigos_cangrejos) != 0:
             for enemigo in self.lista_enemigos_cangrejos: 
@@ -158,9 +166,11 @@ class Nivel_2(Nivel):
                 
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos_cangrejos.remove(enemigo)
+                    self.objetos_collision_plataformas.remove(enemigo)
         else:
             self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
-            
+            self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos_cangrejos)
+        
         if self.vida_bala_enemigo:
             if self.bala_enemigo.rect.x < 0 or self.bala_enemigo.rect.x > ANCHO:
                 self.vida_bala_enemigo = False
@@ -174,6 +184,7 @@ class Nivel_2(Nivel):
                     if enemigo.rect.colliderect(self.laser.rect):
                         self.sonido_muerte.play()
                         self.lista_enemigos.remove(enemigo)
+                        self.objetos_collision_plataformas.remove(enemigo)
                         self.puntuacion += 300
                         self.contador_enemigos += 1
                         self.bala_viva = False
@@ -183,6 +194,7 @@ class Nivel_2(Nivel):
                     if enemigo.rect.colliderect(self.laser.rect):
                         self.sonido_muerte.play()
                         self.lista_enemigos_cangrejos.remove(enemigo)
+                        self.objetos_collision_plataformas.remove(enemigo)
                         self.puntuacion += 100
                         self.contador_enemigos += 1
                         self.bala_viva = False
@@ -201,9 +213,6 @@ class Nivel_2(Nivel):
             elif not trampa.rect.colliderect(self.player.rect):
                 trampa.toco = False
 
-        if len(self.lista_frutas) == 0:
-            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
-
         self.cronometro = pygame.time.get_ticks() // 1000
         if self.tiempo_actual > 1:
             self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
@@ -211,7 +220,7 @@ class Nivel_2(Nivel):
         else:
             self.fin_juego = True
 
-        if self.puntuacion > 2500:
+        if self.puntuacion > PUNTAJE_GANAR:
             self.gano = True
         else:
             self.gano = False
@@ -250,9 +259,9 @@ class Nivel_2(Nivel):
                 pygame.draw.rect(self.pantalla, AZUL, enemigo.rect_tiro, 2)
                 
 
-        self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
-        self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), (500, 20))
+        self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
+        self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)

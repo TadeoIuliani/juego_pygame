@@ -1,6 +1,7 @@
 import pygame
 import random
 from config import *
+from class_Personaje import Personaje
 
 class Enemigo(pygame.sprite.Sprite):
     def __init__(self, image, tamaño, SPEED, animaciones) -> None:
@@ -90,7 +91,7 @@ class Enemigo_2(Enemigo):
         self.estado = "cayendo"
         if ubicacion == None:
             self.rect.x = random.randint(100, ANCHO)
-            self.rect.y = random.randint(-100, ALTO - 200)
+            self.rect.y = random.randint(-100, 400)
         else:
             self.rect.x, self.rect.y = ubicacion
         self.lados = self.obtener_rectangulos()
@@ -142,9 +143,6 @@ class Boss(Personaje):
     def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict) -> None:
         super().__init__(tamaño, coor, imagen, velocidad, animaciones)
         self.estado = "quieto"
-        # self.esta_saltando = True
-        # self.potencia_salto = -9
-        # self.limite_velocidad_caidad = 9
     
     def animar(self, pantalla):
         return super().animar_player(pantalla)

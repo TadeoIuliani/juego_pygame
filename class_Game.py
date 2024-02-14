@@ -1,6 +1,5 @@
 import pygame, sys
 import pygame
-from class_Player import *
 from config import *
 from class_Piso import *
 from class_enemigo import *

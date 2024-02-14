@@ -1,19 +1,21 @@
 import pygame, sys
-from class_Player import *
+from class_Personaje import Personaje
 from class_enemigo import *
 from class_item import *
 from class_Piso import *
 from class_Nivel2 import Nivel_2
 from config import *
 from imagenes import *
-from config import *
+from Class_Proyectiles import Laser
 
 class Nivel3(Nivel_2):
     def __init__(self, fondo_path, plataformas, cajas) -> None:
         super().__init__(fondo_path, plataformas, cajas)
-        self.boss = Boss((150, 130), (700, 200), r"images\boss_sprites\sprites_boss_1-removebg-preview.png", 2, imagenes_boss)
+        self.boss = Boss(TAM_BOSS, COOR_BOSS, r"images\boss_sprites\sprites_boss_1-removebg-preview.png", 2, imagenes_boss)
+        self.objetos_collision_plataformas.append(self.boss)
         self.generador_enemigos = GenearadorEnemigos_2(r"images\sprites_toki\saltando.png", (80, 50), 5, imagenes_toki, None)
         self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
+        self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (300, 110), True, trampa)
         self.trampa_2 = Trampa(r"images\trampa\Off.png", (30, 30), (340, 310), True, trampa)
         self.trampas = [self.trampa, self.trampa_2]
@@ -21,23 +23,17 @@ class Nivel3(Nivel_2):
         self.bombas = []
 
     def collisiones(self):
-        collision_enemigos_plataformas(self.lista_enemigos, self.plataformas)
-        collision_player_plataformas(self.player, self.plataformas)
-        collision_player_plataformas(self.boss, self.plataformas)
-        collision_player_caja(self.player, self.cajas)
+        collision_objeto_plataforma(self.objetos_collision_plataformas, self.plataformas)
 
         if len(self.bombas) != 0:
             for bomba in self.bombas:
-                for plataforma in self.plataformas:
-                    if bomba.rect.colliderect(plataforma.rect):
-                        bomba.esta_cayendo = False
-                        bomba.estado = "explosion"
                 if bomba.rect.colliderect(self.player.rect):
-                        bomba.esta_cayendo = False
-                        bomba.estado = "explosion"
-                        self.vidas -= 1
+                    bomba.esta_cayendo = False
+                    bomba.estado = "explosion"
+                    self.vidas -= 1
                 if bomba.get_explosion() == True:
                     self.bombas.remove(bomba)
+                    self.objetos_collision_plataformas.remove(bomba)
 
         if len(self.lista_frutas) != 0:
             for fruta in self.lista_frutas:
@@ -49,6 +45,9 @@ class Nivel3(Nivel_2):
                     self.sonido_item.play()
                     self.lista_frutas.remove(fruta)
                     self.puntuacion += 200
+        else:
+            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
+
 
         if len(self.lista_enemigos) != 0:
             self.boss.estado = "quieto"
@@ -62,6 +61,7 @@ class Nivel3(Nivel_2):
                 
                 if enemigo.rect.y > ALTO:
                     self.lista_enemigos.remove(enemigo)
+                    self.objetos_collision_plataformas.remove(enemigo)
 
                 if self.player.rect.colliderect(enemigo.rect_tiro):
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
@@ -79,6 +79,7 @@ class Nivel3(Nivel_2):
                         enemigo.estado = "derecha"
         elif self.contador_oleadas < 4:
             self.bombas = crear_objetos_random(Bomba, imagenes_bomba, r"images\klipartz.com.png", (80, 100), 3)
+            self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.bombas)
             self.boss.estado = "atacar"
 
         if self.vida_bala_enemigo:
@@ -95,6 +96,7 @@ class Nivel3(Nivel_2):
                     if enemigo.rect.colliderect(self.laser.rect):
                         self.sonido_muerte.play()
                         self.lista_enemigos.remove(enemigo)
+                        self.objetos_collision_plataformas.remove(enemigo)
                         self.puntuacion += 300
                         self.bala_viva = False
         
@@ -112,8 +114,6 @@ class Nivel3(Nivel_2):
             elif not trampa.rect.colliderect(self.player.rect):
                 trampa.toco = False
 
-        if len(self.lista_frutas) == 0:
-            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
 
 
         self.cronometro = pygame.time.get_ticks() // 1000
@@ -122,10 +122,10 @@ class Nivel3(Nivel_2):
 
         if self.boss.get_atacar() == True:
             self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
+            self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
             self.contador_oleadas += 1
-        
 
-        if self.puntuacion > 2500:
+        if self.puntuacion > PUNTAJE_GANAR:
             self.gano = True
         else:
             self.gano = False
@@ -169,9 +169,9 @@ class Nivel3(Nivel_2):
             for key in self.trampa_2.lados:
                     pygame.draw.rect(self.pantalla, ROJO, self.trampa_2.lados[key], 2)
 
-        self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), (50, 20))
-        self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), (200, 20))
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), (500, 20))
+        self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
+        self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)

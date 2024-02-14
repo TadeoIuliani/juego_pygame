@@ -1,7 +1,6 @@
 import pygame
 from config import *
 import random
-from class_Player import *
 
 
 class Item(pygame.sprite.Sprite):
