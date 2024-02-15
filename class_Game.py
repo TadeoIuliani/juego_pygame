@@ -29,7 +29,7 @@ class Game():
         self.Fuente_user = pygame.font.SysFont("Copperplate Gothic", 50)
         self.Fuente_ranking = pygame.font.SysFont("Copperplate Gothic", 30)
         self.rectangulo_user = pygame.Rect(350, 300, 100, 60)
-        self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 5)
+        self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 4)
         self.resetear_juego = Bottom("BOTONES\pngwing.com (13).png", 800, 50, (50, 50))
         self.user = None
         self.logo_inicio = pygame.image.load(r"BOTONES\Crash_bandicoot_logo_by_jerimiahisaiah.png")
