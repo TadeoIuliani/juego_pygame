@@ -10,7 +10,7 @@ class Enemigo(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image ,tamaño)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(100, ANCHO)
-        self.rect.y = random.randint(-100, ALTO - 200)
+        self.rect.y = random.randint(-100, 400)
         self.lados = self.obtener_rectangulos()
         self.toco = False
         #animaciones

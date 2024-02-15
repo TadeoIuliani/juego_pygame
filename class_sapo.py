@@ -31,7 +31,6 @@ class Sapo(pygame.sprite.Sprite):
         self.contador_pasos += 1
     
     def mover(self):
-                    
         if self.estado == "derecha":
             for key in self.lados:   
                 self.lados[key].x += self.velocidad

@@ -1,20 +1,5 @@
 import sqlite3
 
-# with sqlite3.connect("ranking.db") as conexion:
-#     try:
-#         sentencia = """
-#                     CREATE TABLE nivel_3(
-#                     nombre text,
-#                     puntaje integer
-#                     )
-#                     """
-#         conexion.execute(sentencia)
-#         conexion.commit()
-#         print("Se creo correctamente")
-#     except:
-#         print("error !!!")
-
-
 SENTENCIA_AGREGAR_REGISTRO = f"INSERT into nivel_"
 SENTENCIA_RETORNAR_RANKING = f"SELECT * from nivel_"
 SENTENCIA_RESETEO_NIVEL = f"DELETE from nivel_"

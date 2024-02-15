@@ -190,5 +190,4 @@ class GenearadorEnemigos_2(GenearadorEnemigos):
             object = clase(self.image, self.tamaño, self.speed, self.animaciones, self.ubicacion)
             lista.append(object)
         return lista
-            
 

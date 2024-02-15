@@ -22,20 +22,17 @@ class TextBox():
 
     def draw(self, pantalla, eventos):
         self.update(eventos)
-        # pygame.draw.line(pantalla, self.color_rect, self.input_rect.x, self.input_rect.right, 1)
         if len(self.text) != 0:
             pygame.draw.line(pantalla, self.color_rect, self.input_rect.bottomleft, self.input_rect.bottomright)
         palabra_surface = self.fuente.render(self.text.upper(), 0, self.color)
-        # pantalla.blit(palabra_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
         pantalla.blit(palabra_surface, self.input_rect)
-        self.input_rect.w = max(100, palabra_surface.get_width() + 10)
+        self.input_rect.w = max(10, palabra_surface.get_width() + 10)
 
     def get_text(self): 
         return self.text.upper()
     
     def remover_ultima_letra(self):
         return self.text[:-1]
-    
 
 class Label():
     def __init__(self, fuente, color, text, rectangulo, color_rectangulo) -> None:
@@ -49,6 +46,4 @@ class Label():
         palabra_surface = self.fuente.render(self.text, 0, self.color)
         self.rect.w = palabra_surface.get_width() + 10
         pygame.draw.rect(pantalla, self.color_rect, self.rect, 1)
-        
-        # pantalla.blit(palabra_surface, ((self.rect.x + 5, self.rect.y + 5)))
         pantalla.blit(palabra_surface, self.rect)

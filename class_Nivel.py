@@ -23,12 +23,12 @@ class Nivel:
         self.genearador_sapos = GenearadorEnemigos(r"images\sapos\0.png", TAM_SAPO, 5, animaciones_sapo)
         self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 2)
-        self.vidas = 3
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
+        self.vidas = 3
         self.puntuacion = 0
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
-        self.bala_viva = False
         self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
+        self.bala_viva = False
         self.rectangulos_prog = False
         self.gano = None
         self.fin_juego = False
@@ -55,8 +55,9 @@ class Nivel:
             self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
             self.cronometro = pygame.time.get_ticks() // 1000
         self.leer_inputs(lista_eventos)
-        self.pausa()
         self.collisiones()
+        self.disparos_collisiones()
+        self.actualizar_estado_juego()
         self.actualizar_pantalla()  
 
     def leer_inputs(self, lista_eventos):
@@ -136,51 +137,6 @@ class Nivel:
             self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 3)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_sapos)
 
-        if self.bala_viva:
-            for enemigo in self.lista_enemigos:
-                if enemigo.rect.colliderect(self.laser.rect):
-                    self.sonido_muerte.play()
-                    self.lista_enemigos.remove(enemigo)
-                    self.objetos_collision_plataformas.remove(enemigo)
-                    self.puntuacion += PUNTAJE_ENEMIGOS
-                    self.contador_enemigos += 1
-                    self.bala_viva = False
-            for sapo in self.lista_sapos:
-                if sapo.rect.colliderect(self.laser.rect):
-                    self.sonido_muerte.play()
-                    self.lista_sapos.remove(sapo)
-                    self.objetos_collision_plataformas.remove(sapo)
-                    self.puntuacion += PUNTAJE_ENEMIGOS
-                    self.contador_enemigos += 1
-                    self.bala_viva = False
-            
-            if self.laser.rect.x < 0:
-                self.bala_viva = False
-        
-            if self.laser.rect.x >= ANCHO:
-                self.bala_viva = False
-
-        self.cronometro = pygame.time.get_ticks() // 1000
-        if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
-            self.fin_juego = False
-        else:
-            self.fin_juego = True
-
-        if self.puntuacion > PUNTAJE_GANAR:
-            self.gano = True
-        else:
-            self.gano = False
-
-        if self.contador_enemigos > ENEMIGOS_A_MATAR:
-            self.puntuacion = self.puntuacion * self.tiempo_actual 
-            self.gano = True
-            self.fin_juego = True
-
-        elif self.vidas < 1:
-            self.fin_juego = True
-
-
     def actualizar_pantalla(self):
         self.pantalla.blit(self.fondo, (0, 0))
         for plataforma in self.plataformas:
@@ -188,8 +144,8 @@ class Nivel:
         for caja in self.cajas:
             self.pantalla.blit(caja.image, caja.rect)
 
-        for i in range(len(self.lista_frutas)):
-            self.lista_frutas[i].update(self.pantalla)
+        for fruta in self.lista_frutas:
+            fruta.update(self.pantalla)
 
         if self.rectangulos_prog:
             for enemigo in self.lista_enemigos:
@@ -277,3 +233,46 @@ class Nivel:
 
     def set_cronometro(self, tiempo_pausa):
         self.tiempo_pausa = tiempo_pausa
+
+    def disparos_collisiones(self):
+        if self.bala_viva:
+            for enemigo in self.lista_enemigos:
+                if enemigo.rect.colliderect(self.laser.rect):
+                    self.sonido_muerte.play()
+                    self.lista_enemigos.remove(enemigo)
+                    self.objetos_collision_plataformas.remove(enemigo)
+                    self.puntuacion += PUNTAJE_ENEMIGOS
+                    self.contador_enemigos += 1
+                    self.bala_viva = False
+            for sapo in self.lista_sapos:
+                if sapo.rect.colliderect(self.laser.rect):
+                    self.sonido_muerte.play()
+                    self.lista_sapos.remove(sapo)
+                    self.objetos_collision_plataformas.remove(sapo)
+                    self.puntuacion += PUNTAJE_ENEMIGOS
+                    self.contador_enemigos += 1
+                    self.bala_viva = False
+            
+            if self.laser.rect.x < 0 or self.laser.rect.x >= ANCHO:
+                self.bala_viva = False
+
+    def actualizar_estado_juego(self):
+        self.cronometro = pygame.time.get_ticks() // 1000
+        if self.tiempo_actual > 1:
+            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
+            self.fin_juego = False
+        else:
+            self.fin_juego = True
+
+        if self.puntuacion > PUNTAJE_GANAR:
+            self.gano = True
+        else:
+            self.gano = False
+
+        if self.contador_enemigos > ENEMIGOS_A_MATAR:
+            self.puntuacion = self.puntuacion * self.tiempo_actual 
+            self.gano = True
+            self.fin_juego = True
+
+        elif self.vidas < 1:
+            self.fin_juego = True

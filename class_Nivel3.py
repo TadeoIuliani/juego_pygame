@@ -22,6 +22,18 @@ class Nivel3(Nivel_2):
         self.contador_oleadas = 1
         self.bombas = []
 
+    def play(self, lista_eventos):
+        self.reloj.tick(30)
+        if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
+            self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
+            self.cronometro = pygame.time.get_ticks() // 1000
+        self.leer_inputs(lista_eventos)
+        self.collisiones()
+        self.disparos_collisiones()
+        self.trampas_collisiones()
+        self.actualizar_estado_juego()
+        self.actualizar_pantalla()  
+
     def collisiones(self):
         collision_objeto_plataforma(self.objetos_collision_plataformas, self.plataformas)
 
@@ -47,7 +59,6 @@ class Nivel3(Nivel_2):
                     self.puntuacion += 200
         else:
             self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
-
 
         if len(self.lista_enemigos) != 0:
             self.boss.estado = "quieto"
@@ -81,62 +92,6 @@ class Nivel3(Nivel_2):
             self.bombas = crear_objetos_random(Bomba, imagenes_bomba, r"images\klipartz.com.png", (80, 100), 3)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.bombas)
             self.boss.estado = "atacar"
-
-        if self.vida_bala_enemigo:
-            if self.bala_enemigo.rect.x < 0 or self.bala_enemigo.rect.x > ANCHO:
-                self.vida_bala_enemigo = False
-            if self.bala_enemigo.rect.colliderect(self.player.rect):
-                self.vidas -= 1
-                self.vida_bala_enemigo = False
-
-
-        if self.bala_viva: 
-            if len(self.lista_enemigos) != 0:
-                for enemigo in self.lista_enemigos:
-                    if enemigo.rect.colliderect(self.laser.rect):
-                        self.sonido_muerte.play()
-                        self.lista_enemigos.remove(enemigo)
-                        self.objetos_collision_plataformas.remove(enemigo)
-                        self.puntuacion += 300
-                        self.bala_viva = False
-        
-            if self.laser.rect.x < 0:
-                self.bala_viva = False
-
-            if self.laser.rect.x >= ANCHO:
-                self.bala_viva = False
-        
-        for trampa in self.trampas:
-            if trampa.toco == False and trampa.rect.colliderect(self.player.rect):
-                self.sonido_muerte.play()
-                trampa.toco = True
-                self.vidas -= 1
-            elif not trampa.rect.colliderect(self.player.rect):
-                trampa.toco = False
-
-
-
-        self.cronometro = pygame.time.get_ticks() // 1000
-        if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
-
-        if self.boss.get_atacar() == True:
-            self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
-            self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
-            self.contador_oleadas += 1
-
-        if self.puntuacion > PUNTAJE_GANAR:
-            self.gano = True
-        else:
-            self.gano = False
-
-        if self.contador_oleadas > 3:
-            self.puntuacion = self.puntuacion * self.tiempo_actual 
-            self.gano = True
-            self.fin_juego = True
-        elif self.vidas < 1:
-            self.fin_juego = True
-
 
     def actualizar_pantalla(self):
         self.pantalla.blit(self.fondo, (0, 0))
@@ -240,3 +195,45 @@ class Nivel3(Nivel_2):
             self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
             self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
 
+    def disparos_collisiones(self):
+        if self.vida_bala_enemigo:
+            if self.bala_enemigo.rect.x < 0 or self.bala_enemigo.rect.x > ANCHO:
+                self.vida_bala_enemigo = False
+            elif self.bala_enemigo.rect.colliderect(self.player.rect):
+                self.vidas -= 1
+                self.vida_bala_enemigo = False
+
+        if self.bala_viva:
+            if len(self.lista_enemigos) != 0: 
+                for enemigo in self.lista_enemigos:
+                    if enemigo.rect.colliderect(self.laser.rect):
+                        self.sonido_muerte.play()
+                        self.lista_enemigos.remove(enemigo)
+                        self.objetos_collision_plataformas.remove(enemigo)
+                        self.puntuacion += 300
+                        self.bala_viva = False
+        
+            if self.laser.rect.x < 0 or self.laser.rect.x >= ANCHO:
+                self.bala_viva = False
+
+    def actualizar_estado_juego(self):
+        self.cronometro = pygame.time.get_ticks() // 1000
+        if self.tiempo_actual > 1:
+            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
+
+        if self.boss.get_atacar() == True:
+            self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
+            self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
+            self.contador_oleadas += 1
+
+        if self.puntuacion > PUNTAJE_GANAR:
+            self.gano = True
+        else:
+            self.gano = False
+
+        if self.contador_oleadas > 3:
+            self.puntuacion = self.puntuacion * self.tiempo_actual 
+            self.gano = True
+            self.fin_juego = True
+        elif self.vidas < 1:
+            self.fin_juego = True

@@ -107,10 +107,8 @@ class Game():
                     if self.contenedor_niveles.get_reset():
                         self.reset()
 
-            elif self.estado_juego == "gano":
-                self.pantalla_final(True)
-            elif self.estado_juego == "game_over":
-                self.pantalla_final(False)
+            elif self.estado_juego == "gano" or self.estado_juego == "game_over":
+                self.pantalla_final()
 
             else:
                 print("ERROR")
@@ -122,14 +120,7 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            
-            teclas_presionadas = pygame.key.get_pressed()
-            if teclas_presionadas[pygame.K_F3]:
-                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
-                print("-")
-            elif teclas_presionadas[pygame.K_F4]:
-                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
-                print("+")
+            self.manejo_volumen_musica()
             self.pantalla.fill(COLOR_MENU)
             self.pantalla.blit(self.logo_inicio, (200, 50))
             self.txt_user.draw(self.pantalla, pygame.event.get())
@@ -151,12 +142,11 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            
+            self.manejo_volumen_musica()
             self.pantalla.fill(COLOR_MENU)
             self.pantalla.blit(self.fondo_seleccion_niveles, (290, 100))
             self.pantalla.blit(self.image_crash, (10, 170))
             self.pantalla.blit(self.image_crash, (630, 170))
-            
             self.pantalla.blit(self.fuente_niveles.render("NIVELES", 0, NEGRO), (300, 20))
 
             self.boton_nivel1.draw(self.pantalla)
@@ -194,7 +184,7 @@ class Game():
                 self.contenedor_niveles = self.nivel
             pygame.display.flip()
 
-    def pantalla_final(self,resultado):
+    def pantalla_final(self):
         pygame.mixer.music.pause()
         if self.estado_juego == "gano":
             pygame.mixer.music.load(r"sounds\010564339_prev.mp3")
@@ -202,12 +192,14 @@ class Game():
             pygame.mixer.music.load(r"sounds\010607643_prev.mp3")
         pygame.mixer.music.play(1)
         pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
+
         agregar_regristro(self.base_datos, self.nivel_seleccionado, self.user, self.puntuacion)
         lista_ranking = traer_ranking(self.base_datos, self.nivel_seleccionado)
 
         for lista in lista_ranking:
             print(lista)
         while self.estado_juego == "gano" or self.estado_juego == "game_over":
+            self.manejo_volumen_musica()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -391,6 +383,15 @@ class Game():
 
     def control_volumen_sonido(self, control):
         self.contenedor_niveles.configuracion_sonidos(control)
+
+    def manejo_volumen_musica(self):
+        teclas_presionadas = pygame.key.get_pressed()
+        if teclas_presionadas[pygame.K_F3]:
+            pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()- 0.01)
+            print("-")
+        elif teclas_presionadas[pygame.K_F4]:
+            pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
+            print("+")
 
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
