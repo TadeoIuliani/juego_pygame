@@ -45,8 +45,8 @@ class Sapo(pygame.sprite.Sprite):
                 self.estado = "derecha"
 
         if not self.esta_saltando:
-                    self.esta_saltando = True
-                    self.desplazamiento_y = self.potencia_salto
+            self.esta_saltando = True
+            self.desplazamiento_y = self.potencia_salto
         
         
     def obtener_rectangulos(self):

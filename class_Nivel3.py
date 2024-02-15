@@ -56,7 +56,7 @@ class Nivel3(Nivel_2):
                 if colision_fruta_otro_objeto(fruta, self.player):
                     self.sonido_item.play()
                     self.lista_frutas.remove(fruta)
-                    self.puntuacion += 200
+                    self.puntuacion += PUNTAJE_FRUTA
         else:
             self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 5)
 

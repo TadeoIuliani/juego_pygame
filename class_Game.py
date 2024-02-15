@@ -88,7 +88,6 @@ class Game():
                 self.eleccion_nivel()
 
             elif self.estado_juego == "jugando":
-                print(self.contenedor_niveles.sonido_disparo.get_volume())
                 self.contenedor_niveles.play(eventos)
                 if self.contenedor_niveles.get_estado_juego() == True:
                     self.puntuacion = self.contenedor_niveles.get_puntuacion()
