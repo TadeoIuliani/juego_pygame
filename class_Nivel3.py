@@ -11,13 +11,13 @@ from Class_Proyectiles import Laser
 class Nivel3(Nivel_2):
     def __init__(self, fondo_path, plataformas, cajas) -> None:
         super().__init__(fondo_path, plataformas, cajas)
-        self.boss = Boss(TAM_BOSS, COOR_BOSS, r"images\boss_sprites\sprites_boss_1-removebg-preview.png", 2, imagenes_boss)
+        self.boss = Boss(TAM_BOSS, COOR_BOSS, r"boss_sprites\sprites_boss_1-removebg-preview.png", 2, imagenes_boss)
         self.objetos_collision_plataformas.append(self.boss)
-        self.generador_enemigos = GenearadorEnemigos_2(r"images\sprites_toki\saltando.png", (80, 50), 5, imagenes_toki, None)
+        self.generador_enemigos = GenearadorEnemigos_2(r"sprites_toki\saltando.png", (80, 50), 5, imagenes_toki, None)
         self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
-        self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (300, 110), True, trampa)
-        self.trampa_2 = Trampa(r"images\trampa\Off.png", (30, 30), (340, 310), True, trampa)
+        self.trampa = Trampa(r"trampa\Off.png", (30, 30), (300, 110), True, trampa)
+        self.trampa_2 = Trampa(r"trampa\Off.png", (30, 30), (340, 310), True, trampa)
         self.trampas = [self.trampa, self.trampa_2]
         self.contador_oleadas = 1
         self.bombas = []
@@ -58,7 +58,7 @@ class Nivel3(Nivel_2):
                     self.lista_frutas.remove(fruta)
                     self.puntuacion += 200
         else:
-            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
+            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 5)
 
         if len(self.lista_enemigos) != 0:
             self.boss.estado = "quieto"
@@ -77,11 +77,11 @@ class Nivel3(Nivel_2):
                 if self.player.rect.colliderect(enemigo.rect_tiro):
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_izquierda"
-                        self.bala_enemigo = Laser(r"images\sprites_toki\fuego_izquierda.png", enemigo.rect.midleft,10 , False)
+                        self.bala_enemigo = Laser(r"sprites_toki\fuego_izquierda.png", enemigo.rect.midleft,10 , False)
                         self.vida_bala_enemigo = True
                     elif self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_derecha"
-                        self.bala_enemigo = Laser(r"images\sprites_toki\fuego_derecha.png", enemigo.rect.midleft,10 , True)
+                        self.bala_enemigo = Laser(r"sprites_toki\fuego_derecha.png", enemigo.rect.midleft,10 , True)
                         self.vida_bala_enemigo = True
                 else:
                     if enemigo.estado == "atacar_derecha":
@@ -89,7 +89,7 @@ class Nivel3(Nivel_2):
                     elif enemigo.estado == "atacar_izquierda":
                         enemigo.estado = "derecha"
         elif self.contador_oleadas < 4:
-            self.bombas = crear_objetos_random(Bomba, imagenes_bomba, r"images\klipartz.com.png", (80, 100), 3)
+            self.bombas = crear_objetos_random(Bomba, imagenes_bomba, r"klipartz.com.png", (80, 100), 3)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.bombas)
             self.boss.estado = "atacar"
 
@@ -156,12 +156,12 @@ class Nivel3(Nivel_2):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_x:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20)
+                        self.laser = Laser("disparo.png", self.player.rect.midright, 20)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_z:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright,20 ,False)
+                        self.laser = Laser("disparo.png", self.player.rect.midright,20 ,False)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:

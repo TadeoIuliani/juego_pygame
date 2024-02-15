@@ -5,7 +5,6 @@ from class_Piso import *
 from class_enemigo import *
 from imagenes import *
 from class_sapo import Sapo
-from class_Plataforma import Plataforma
 from class_Bottom import *
 from class_Nivel import * 
 from class_Nivel2 import * 
@@ -31,43 +30,43 @@ class Game():
         self.Fuente_ranking = pygame.font.SysFont("Copperplate Gothic", 30)
         self.rectangulo_user = pygame.Rect(350, 300, 100, 60)
         self.txt_user = TextBox(self.Fuente_user, NEGRO, "", self.rectangulo_user, BLANCO, 5)
-        self.resetear_juego = Bottom("images\BOTONES\pngwing.com (13).png", 800, 50, (50, 50))
+        self.resetear_juego = Bottom("BOTONES\pngwing.com (13).png", 800, 50, (50, 50))
         self.user = None
-        self.logo_inicio = pygame.image.load(r"images\BOTONES\Crash_bandicoot_logo_by_jerimiahisaiah.png")
+        self.logo_inicio = pygame.image.load(r"BOTONES\Crash_bandicoot_logo_by_jerimiahisaiah.png")
         self.logo_inicio = pygame.transform.scale(self.logo_inicio, (500, 200))
-        self.boton_user = Bottom("images\BOTONES\ingresar.png", 300, 400, (300, 100))
+        self.boton_user = Bottom("BOTONES\ingresar.png", 300, 400, (300, 100))
         self.opcion_seleccionada = None
         self.contenedor_niveles = None
 
         #Eleccion niveles-------------------------------------------------------------------
-        self.boton_nivel1 = Bottom(r"images\BOTONES\Nivel 1.png", 326, 200, (120, 120))
-        self.boton_nivel2 = Bottom(r"images\BOTONES\nivel 2.png", 475, 200, (120, 120))
-        self.boton_nivel3 = Bottom(r"images\BOTONES\nivel 3.png", 400, 330, (120, 120))
-        self.fondo_seleccion_niveles = pygame.image.load(r"images\BOTONES\fondo_score.png")
+        self.boton_nivel1 = Bottom(r"BOTONES\Nivel 1.png", 326, 200, (120, 120))
+        self.boton_nivel2 = Bottom(r"BOTONES\nivel 2.png", 475, 200, (120, 120))
+        self.boton_nivel3 = Bottom(r"BOTONES\nivel 3.png", 400, 330, (120, 120))
+        self.fondo_seleccion_niveles = pygame.image.load(r"BOTONES\fondo_score.png")
         self.fondo_seleccion_niveles = pygame.transform.scale(self.fondo_seleccion_niveles, (350, 400))
-        self.image_crash = pygame.image.load(r"images\Portada\4.png")
+        self.image_crash = pygame.image.load(r"Portada\4.png")
         self.image_crash = pygame.transform.scale(self.image_crash, (290, 300))
         self.fuente_niveles = pygame.font.SysFont("Algerian", 90)
         self.nivel = None
 
         #pantalla_final-----------------------------------------------------------------
-        self.fondo_fin_juego = pygame.image.load("images\Fondos de juego\Fondo de juego.jpg")
+        self.fondo_fin_juego = pygame.image.load("Fondos de juego\Fondo de juego.jpg")
         self.fondo_fin_juego = pygame.transform.scale(self.fondo_fin_juego, (ANCHO, ALTO))
-        self.fondo_ranking = pygame.image.load(r"images\BOTONES\tabla_clasificacion.png")
+        self.fondo_ranking = pygame.image.load(r"BOTONES\tabla_clasificacion.png")
         self.fondo_ranking = pygame.transform.scale(self.fondo_ranking, (370, 400))
-        self.logo_player = pygame.image.load(r"images\BOTONES\kisspng-user-silhouette-simplicity-vector-5b52f75d202791.0292972215321639331317.png")
+        self.logo_player = pygame.image.load(r"BOTONES\kisspng-user-silhouette-simplicity-vector-5b52f75d202791.0292972215321639331317.png")
         self.logo_player = pygame.transform.scale(self.logo_player, (40, 40))
-        self.logo_win = pygame.image.load("images\Fondos de juego\win_logo.png")
+        self.logo_win = pygame.image.load("Fondos de juego\win_logo.png")
         self.logo_win = pygame.transform.scale(self.logo_win, (400, 170))
-        self.logo_game_over = pygame.image.load("images\Fondos de juego\game_over.png")
+        self.logo_game_over = pygame.image.load("Fondos de juego\game_over.png")
         self.logo_game_over = pygame.transform.scale(self.logo_game_over, (340, 120))
         #Pausa-----------------------------------------------------------------------------
         self.fuente_pause = pygame.font.SysFont("Cooper", 40)
-        self.boton_pausa = Bottom("images\BOTONES\pausa_boton.png", 390, 300, (135, 120))
-        self.boton_mas_musica = Bottom(r"images\BOTONES\boton_mas.png", 550, 190, (40, 40))
-        self.boton_menos_musica = Bottom(r"images\BOTONES\boton_menos.png", 500, 190, (40, 40))
-        self.boton_mas_sonido = Bottom(r"images\BOTONES\boton_mas.png", 550, 240, (40, 40))
-        self.boton_menos_sonido = Bottom(r"images\BOTONES\boton_menos.png", 500, 240, (40, 40))
+        self.boton_pausa = Bottom("BOTONES\pausa_boton.png", 390, 300, (135, 120))
+        self.boton_mas_musica = Bottom(r"BOTONES\boton_mas.png", 550, 190, (40, 40))
+        self.boton_menos_musica = Bottom(r"BOTONES\boton_menos.png", 500, 190, (40, 40))
+        self.boton_mas_sonido = Bottom(r"BOTONES\boton_mas.png", 550, 240, (40, 40))
+        self.boton_menos_sonido = Bottom(r"BOTONES\boton_menos.png", 500, 240, (40, 40))
         #---------------------------------------------------------------------------------
         pygame.mixer.init()
         pygame.mixer.music.load("sounds\musica-espera-separador-musical-.mp3")
@@ -281,7 +280,7 @@ class Game():
             caja_2 = Piso(info_caja_2["imagen"], info_caja_2["dimensiones"], info_caja_2["ubicacion"])
             cajas = [caja, caja_1, caja_2]
             plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4]
-            self.nivel = Nivel(r"images\Fondos de juego\fondo_juego.jpg", plataformas, cajas)
+            self.nivel = Nivel(r"Fondos de juego\fondo_juego.jpg", plataformas, cajas)
 
         elif self.nivel_seleccionado == 2:
             info_piso = data["Nivel_2"]["Piso"]
@@ -307,7 +306,7 @@ class Game():
 
             cajas = [caja_1, caja_2]
             plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5, plataforma_6]
-            self.nivel = Nivel_2(r"images\Fondos de juego\47792.jpg", plataformas, cajas)
+            self.nivel = Nivel_2(r"Fondos de juego\47792.jpg", plataformas, cajas)
 
         elif self.nivel_seleccionado == 3:
             info_piso = data["Nivel_3"]["Piso"]
@@ -324,7 +323,7 @@ class Game():
             plataforma_5 = Piso(info_plataforma_5["imagen"], info_plataforma_5["dimensiones"], info_plataforma_5["ubicacion"])
             cajas = []
             plataformas = [piso, plataforma_1, plataforma_2, plataforma_3, plataforma_4, plataforma_5]
-            self.nivel = Nivel3(r"images\Fondos de juego\vecteezy_alien-planet-game-background_6316482.jpg", plataformas, cajas)
+            self.nivel = Nivel3(r"Fondos de juego\vecteezy_alien-planet-game-background_6316482.jpg", plataformas, cajas)
 
     def pausa(self):
         while self.contenedor_niveles.get_pausa():

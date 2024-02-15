@@ -13,7 +13,7 @@ class Nivel_2(Nivel):
     def __init__(self, fondo_path, plataformas, cajas) -> None:
         super().__init__(fondo_path, plataformas, cajas)
         self.plataformas = agregar_lista_a_lista(self.plataformas, self.cajas)
-        self.enemigo_dispara = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
+        self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.contador_camaleon = 1
         self.lista_enemigos = [self.enemigo_dispara]
         pygame.mixer.init()
@@ -25,8 +25,8 @@ class Nivel_2(Nivel):
         self.reloj = pygame.time.Clock()
         self.bala_enemigo = None
         self.vida_bala_enemigo = False
-        self.trampa = Trampa(r"images\trampa\Off.png", (30, 30), (200, 170), True, trampa)
-        self.trampa_2 = Trampa(r"images\trampa\Off.png", (30, 30), (660, 170), True, trampa)
+        self.trampa = Trampa(r"trampa\Off.png", (30, 30), (200, 170), True, trampa)
+        self.trampa_2 = Trampa(r"trampa\Off.png", (30, 30), (660, 170), True, trampa)
         self.trampas = [self.trampa, self.trampa_2]
         self.lista_enemigos_cangrejos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.objetos_collision_plataformas = [self.player]
@@ -55,12 +55,12 @@ class Nivel_2(Nivel):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_x:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20)
+                        self.laser = Laser("disparo.png", self.player.rect.midright, 20)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_z:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright,20 ,False)
+                        self.laser = Laser("disparo.png", self.player.rect.midright,20 ,False)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
@@ -96,7 +96,7 @@ class Nivel_2(Nivel):
                     self.lista_frutas.remove(fruta)
                     self.puntuacion += PUNTAJE_FRUTA
         else:
-            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
+            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 5)
 
         if len(self.lista_enemigos) != 0:
             for enemigo in self.lista_enemigos: 
@@ -114,11 +114,11 @@ class Nivel_2(Nivel):
                 if self.player.rect.colliderect(enemigo.rect_tiro):
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_izquierda"
-                        self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , False)
+                        self.bala_enemigo = Laser(r"Ice Particle.png", enemigo.rect.midleft,10 , False)
                         self.vida_bala_enemigo = True
                     elif self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_derecha"
-                        self.bala_enemigo = Laser(r"images\Ice Particle.png", enemigo.rect.midleft,10 , True)
+                        self.bala_enemigo = Laser(r"Ice Particle.png", enemigo.rect.midleft,10 , True)
                         self.vida_bala_enemigo = True
                 else:
                     if enemigo.estado == "atacar_derecha":
@@ -128,7 +128,7 @@ class Nivel_2(Nivel):
 
         elif self.contador_camaleon < 2:
             self.contador_camaleon += 1
-            self.enemigo_dispara = Enemigo_2("images\camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
+            self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
             self.lista_enemigos.append(self.enemigo_dispara)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         

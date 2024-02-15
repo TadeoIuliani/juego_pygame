@@ -19,15 +19,15 @@ class Nivel:
         self.plataformas = plataformas
         self.cajas = cajas
         self.plataformas = agregar_lista_a_lista(self.plataformas, self.cajas)
-        self.genearador_cangrejos = GenearadorEnemigos(r"images\cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
-        self.genearador_sapos = GenearadorEnemigos(r"images\sapos\0.png", TAM_SAPO, 5, animaciones_sapo)
+        self.genearador_cangrejos = GenearadorEnemigos(r"cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
+        self.genearador_sapos = GenearadorEnemigos(r"sapos\0.png", TAM_SAPO, 5, animaciones_sapo)
         self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 2)
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.vidas = 3
         self.puntuacion = 0
-        self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 3)
-        self.laser = Laser(r"images\disparo.png", self.player.rect.bottomright, 15)
+        self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 3)
+        self.laser = Laser(r"disparo.png", self.player.rect.bottomright, 15)
         self.bala_viva = False
         self.rectangulos_prog = False
         self.gano = None
@@ -68,12 +68,12 @@ class Nivel:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_x:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20)
+                        self.laser = Laser("disparo.png", self.player.rect.midright, 20)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_z:
                     if self.bala_viva == False and self.pause == False:
-                        self.laser = Laser("images\disparo.png", self.player.rect.midright, 20, False)
+                        self.laser = Laser("disparo.png", self.player.rect.midright, 20, False)
                         self.sonido_disparo.play()
                         self.bala_viva = True
                 elif event.key == pygame.K_TAB:
@@ -108,7 +108,7 @@ class Nivel:
                     self.lista_frutas.remove(fruta)
                     self.puntuacion += PUNTAJE_FRUTA
         else:
-            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"images\frutitas\0.png", TAM_ITEM, 5)
+            self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 5)
 
         if len(self.lista_enemigos) != 0:
             for enemigo in self.lista_enemigos: 
