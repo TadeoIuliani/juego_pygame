@@ -1,12 +1,11 @@
 import sqlite3
 
-SENTENCIA_AGREGAR_REGISTRO = f"INSERT into nivel_"
-SENTENCIA_RETORNAR_RANKING = f"SELECT * from nivel_"
-SENTENCIA_RESETEO_NIVEL = f"DELETE from nivel_"
+SENTENCIA_AGREGAR_REGISTRO = f"INSERT into ranking"
+SENTENCIA_RETORNAR_RANKING = f"SELECT * from ranking"
+SENTENCIA_RESETEO = f"DELETE from ranking"
 
-def agregar_regristro(bd : str, nivel : int, usuario : str, puntaje : int):
-    if nivel > 0 and nivel < 4:
-        sentencia = SENTENCIA_AGREGAR_REGISTRO + f"{nivel}(nombre, puntaje) values('{usuario}', {puntaje})"
+def agregar_regristro(bd : str, usuario : str, puntaje : int):
+    sentencia = SENTENCIA_AGREGAR_REGISTRO + f"(nombre, puntaje) values('{usuario}', {puntaje})"
     conectar_y_ejecutar(bd, sentencia)
 
 
@@ -21,15 +20,15 @@ def conectar_y_ejecutar(path : str, sentencia : str):
         conexion.close()
         return retorno
 
-def traer_ranking(bd : str, nivel : int):
-    if nivel > 0 and nivel < 4:
-        sentencia = SENTENCIA_RETORNAR_RANKING + f"{nivel} order by puntaje desc limit 4"
+def traer_ranking(bd : str):
+    if bd is not None:
+        sentencia = SENTENCIA_RETORNAR_RANKING + f" order by puntaje desc limit 4"
 
     cursor = conectar_y_ejecutar(bd, sentencia)
     if cursor != None:
         return cursor
 
 def resetear_juego(bd):
-    conectar_y_ejecutar(bd, SENTENCIA_RESETEO_NIVEL + "1")
-    conectar_y_ejecutar(bd, SENTENCIA_RESETEO_NIVEL + "2")
-    conectar_y_ejecutar(bd, SENTENCIA_RESETEO_NIVEL + "3")
+    conectar_y_ejecutar(bd, SENTENCIA_RESETEO)
+
+

@@ -9,23 +9,24 @@ from config import *
 from imagenes import *
 from config import *
 from Class_Proyectiles import Laser
+from cronometro import Cronometro
+
 
 class Nivel:
-    def __init__(self, fondo_path, plataformas, cajas) -> None:
+    def __init__(self, fondo_path, plataformas, cajas, puntuacion) -> None:
         self.pantalla = pygame.display.set_mode((ANCHO, ALTO))
         self.fondo = pygame.image.load(fondo_path) 
         self.fondo = pygame.transform.scale(self.fondo, (ANCHO, ALTO))
         self.player = Personaje(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player)
         self.plataformas = plataformas
         self.cajas = cajas
-        self.plataformas = agregar_lista_a_lista(self.plataformas, self.cajas)
         self.genearador_cangrejos = GenearadorEnemigos(r"cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
         self.genearador_sapos = GenearadorEnemigos(r"sapos\0.png", TAM_SAPO, 5, animaciones_sapo)
         self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 2)
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
         self.vidas = 3
-        self.puntuacion = 0
+        self.puntuacion = puntuacion
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 3)
         self.laser = Laser(r"disparo.png", self.player.rect.bottomright, 15)
         self.bala_viva = False
@@ -40,24 +41,29 @@ class Nivel:
         self.sonido_menos_vida = pygame.mixer.Sound("sounds\menos_vida.mp3")
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
         self.reloj = pygame.time.Clock()
-        self.cronometro = None
-        self.tiempo_inicio = 60
-        self.tiempo_actual = self.tiempo_inicio
-        self.tiempo_pausa = 0
         self.contador_enemigos = 0
         self.objetos_collision_plataformas = [self.player]
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_sapos)
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
+        self.bandera = False
+        self.cronometro = Cronometro(15, False, 0)
+        self.tiempo_pausa = 0
 
     def play(self, lista_eventos):
         self.reloj.tick(30)
-        if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
-            self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
-            self.cronometro = pygame.time.get_ticks() // 1000
+
+        if self.bandera == False:
+            self.cronometro.encender()
+            self.bandera = True
+
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.disparos_collisiones()
         self.actualizar_estado_juego()
+
+        # print(self.cronometro.mostrar_tiempo())
+
+        self.cronometro.actualizar()
         self.actualizar_pantalla()  
 
     def leer_inputs(self, lista_eventos):
@@ -94,9 +100,14 @@ class Nivel:
             self.player.estado = "girar"
         else:
             self.player.estado = "quieto"
+        
+        if self.pause:
+            self.tiempo_pausa = self.cronometro.mostrar_tiempo()
+            self.cronometro.reiniciar(self.tiempo_pausa, False, 0)
 
     def collisiones(self):
         collision_objeto_plataforma(self.objetos_collision_plataformas, self.plataformas)
+        collision_player_caja(self.player, self.cajas)
 
         if len(self.lista_frutas) != 0:
             for fruta in self.lista_frutas:
@@ -161,7 +172,7 @@ class Nivel:
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.tiempo_actual)}", 0, BLANCO), UBICACION_TIEMPO)
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.cronometro.mostrar_tiempo())}", 0, BLANCO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)
@@ -190,9 +201,9 @@ class Nivel:
                 enemigo.velocidad = 7
             for sapo in self.lista_sapos:
                 sapo.velocidad = 5
-
+        self.cronometro.reiniciar(self.tiempo_pausa, False, 0)
         
-    def get_estado_juego(self):
+    def get_fin_de_juego(self):
         if self.fin_juego:
             return True
         else:
@@ -231,8 +242,6 @@ class Nivel:
             self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
             self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
 
-    def set_cronometro(self, tiempo_pausa):
-        self.tiempo_pausa = tiempo_pausa
 
     def disparos_collisiones(self):
         if self.bala_viva:
@@ -257,22 +266,18 @@ class Nivel:
                 self.bala_viva = False
 
     def actualizar_estado_juego(self):
-        self.cronometro = pygame.time.get_ticks() // 1000
-        if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
-            self.fin_juego = False
-        else:
+        self.cronometro.actualizar()
+
+        if self.cronometro.termino():
             self.fin_juego = True
+        else:
+            self.fin_juego = False
 
         if self.puntuacion > PUNTAJE_GANAR:
             self.gano = True
         else:
             self.gano = False
 
-        if self.contador_enemigos > ENEMIGOS_A_MATAR:
-            self.puntuacion = self.puntuacion * self.tiempo_actual 
-            self.gano = True
+        if self.vidas < 1:
             self.fin_juego = True
-
-        elif self.vidas < 1:
-            self.fin_juego = True
+            self.gano = False

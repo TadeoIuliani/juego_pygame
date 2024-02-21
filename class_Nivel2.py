@@ -10,9 +10,8 @@ from config import *
 
 
 class Nivel_2(Nivel):
-    def __init__(self, fondo_path, plataformas, cajas) -> None:
-        super().__init__(fondo_path, plataformas, cajas)
-        self.plataformas = agregar_lista_a_lista(self.plataformas, self.cajas)
+    def __init__(self, fondo_path, plataformas, cajas, puntuacion) -> None:
+        super().__init__(fondo_path, plataformas, cajas, puntuacion)
         self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
         self.contador_camaleon = 1
         self.lista_enemigos = [self.enemigo_dispara]
@@ -34,17 +33,20 @@ class Nivel_2(Nivel):
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos_cangrejos)
 
 
-
     def play(self, lista_eventos):
         self.reloj.tick(30)
-        if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
-            self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
-            self.cronometro = pygame.time.get_ticks() // 1000
+
+        if self.bandera == False:
+            self.cronometro.encender()
+            self.bandera = True
+
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.disparos_collisiones()
         self.trampas_collisiones()
         self.actualizar_estado_juego()
+        self.cronometro.actualizar()
+
         self.actualizar_pantalla() 
     
     def leer_inputs(self, lista_eventos):
@@ -82,8 +84,13 @@ class Nivel_2(Nivel):
         else:
             self.player.estado = "quieto"
 
+        if self.pause:
+            self.tiempo_pausa = self.cronometro.mostrar_tiempo()
+            self.cronometro.reiniciar(self.tiempo_pausa, False, 0)
+
     def collisiones(self):
         collision_objeto_plataforma(self.objetos_collision_plataformas, self.plataformas)
+        collision_player_caja(self.player, self.cajas)     
 
         if len(self.lista_frutas) != 0:
             for fruta in self.lista_frutas:
@@ -126,9 +133,9 @@ class Nivel_2(Nivel):
                     elif enemigo.estado == "atacar_izquierda":
                         enemigo.estado = "derecha"
 
-        elif self.contador_camaleon < 2:
+        else:
             self.contador_camaleon += 1
-            self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (0, 100))
+            self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon)
             self.lista_enemigos.append(self.enemigo_dispara)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         
@@ -176,7 +183,7 @@ class Nivel_2(Nivel):
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), UBICACION_TIEMPO)
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.cronometro.mostrar_tiempo())}", 0, BLANCO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)
@@ -221,9 +228,6 @@ class Nivel_2(Nivel):
             self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.3)
             self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
             self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
-
-    def set_cronometro(self, tiempo_pausa):
-        return super().set_cronometro(tiempo_pausa)
     
     def disparos_collisiones(self):
         if self.vida_bala_enemigo:
@@ -267,25 +271,20 @@ class Nivel_2(Nivel):
                 trampa.toco = False
 
     def actualizar_estado_juego(self):
-        self.cronometro = pygame.time.get_ticks() // 1000
-        if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
-            self.fin_juego = False
-        else:
+        self.cronometro.actualizar()
+        if self.cronometro.termino():
             self.fin_juego = True
+        else:
+            self.fin_juego = False
 
-        if self.puntuacion > PUNTAJE_GANAR:
+        if self.puntuacion > PUNTAJE_GANAR_2:
             self.gano = True
         else:
             self.gano = False
 
-        if self.contador_enemigos > 7:
-            self.puntuacion = self.puntuacion * self.tiempo_actual 
-            self.gano = True
+        if self.vidas < 1:
             self.fin_juego = True
-
-        elif self.vidas < 1:
-            self.fin_juego = True
+            self.gano = False
 
 
 

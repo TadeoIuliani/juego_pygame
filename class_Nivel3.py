@@ -9,8 +9,8 @@ from imagenes import *
 from Class_Proyectiles import Laser
 
 class Nivel3(Nivel_2):
-    def __init__(self, fondo_path, plataformas, cajas) -> None:
-        super().__init__(fondo_path, plataformas, cajas)
+    def __init__(self, fondo_path, plataformas, cajas, puntuacion) -> None:
+        super().__init__(fondo_path, plataformas, cajas, puntuacion)
         self.boss = Boss(TAM_BOSS, COOR_BOSS, r"boss_sprites\sprites_boss_1-removebg-preview.png", 2, imagenes_boss)
         self.objetos_collision_plataformas.append(self.boss)
         self.generador_enemigos = GenearadorEnemigos_2(r"sprites_toki\saltando.png", (80, 50), 5, imagenes_toki, None)
@@ -24,9 +24,9 @@ class Nivel3(Nivel_2):
 
     def play(self, lista_eventos):
         self.reloj.tick(30)
-        if self.cronometro == None and ((pygame.time.get_ticks() // 1000) > 1):
-            self.tiempo_inicio = self.tiempo_inicio + (pygame.time.get_ticks() // 1000)
-            self.cronometro = pygame.time.get_ticks() // 1000
+        if self.bandera == False:
+            self.cronometro.encender()
+            self.bandera = True
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.disparos_collisiones()
@@ -126,7 +126,7 @@ class Nivel3(Nivel_2):
 
         self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {self.tiempo_actual}", 0, BLANCO), UBICACION_TIEMPO)
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.cronometro.mostrar_tiempo())}", 0, BLANCO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
             enemigo.update(self.pantalla)
@@ -182,6 +182,11 @@ class Nivel3(Nivel_2):
             self.player.estado = "girar"
         else:
             self.player.estado = "quieto"
+        
+        if self.pause:
+            self.tiempo_pausa = self.cronometro.mostrar_tiempo()
+            self.cronometro.reiniciar(self.tiempo_pausa, False, 0)
+
 
     def configuracion_sonidos(self, volumen):
         if volumen:
@@ -217,23 +222,22 @@ class Nivel3(Nivel_2):
                 self.bala_viva = False
 
     def actualizar_estado_juego(self):
-        self.cronometro = pygame.time.get_ticks() // 1000
-        if self.tiempo_actual > 1:
-            self.tiempo_actual = self.tiempo_inicio - self.cronometro + self.tiempo_pausa
-
         if self.boss.get_atacar() == True:
             self.lista_enemigos = self.generador_enemigos.generar_enemigos(Enemigo_2, 3)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
             self.contador_oleadas += 1
 
-        if self.puntuacion > PUNTAJE_GANAR:
+        self.cronometro.actualizar()
+        if self.cronometro.termino():
+            self.fin_juego = True
+        else:
+            self.fin_juego = False
+
+        if self.puntuacion > PUNTAJE_GANAR_3:
             self.gano = True
         else:
             self.gano = False
 
-        if self.contador_oleadas > 3:
-            self.puntuacion = self.puntuacion * self.tiempo_actual 
-            self.gano = True
+        if self.vidas < 1:
             self.fin_juego = True
-        elif self.vidas < 1:
-            self.fin_juego = True
+            self.gano = False

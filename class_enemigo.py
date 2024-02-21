@@ -9,7 +9,7 @@ class Enemigo(pygame.sprite.Sprite):
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image ,tamaño)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(100, ANCHO)
+        self.rect.x = random.randint(100, 700)
         self.rect.y = random.randint(-100, 400)
         self.lados = self.obtener_rectangulos()
         self.toco = False
@@ -20,7 +20,7 @@ class Enemigo(pygame.sprite.Sprite):
         self.velocidad = SPEED
         #gravedad
         self.gravedad = 1
-        self.potencia_salto = -10
+        # self.potencia_salto = -10
         self.limite_velocidad_caidad = 10
         self.esta_cayendo = True
         self.desplazamiento_y = 0

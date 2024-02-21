@@ -46,7 +46,9 @@ COOR_BOSS = (700, 200)
 #Nivel_1--------------------------------------------
 PUNTAJE_FRUTA = 200
 PUNTAJE_ENEMIGOS = 300
-PUNTAJE_GANAR = 2500
+PUNTAJE_GANAR = 1500
+PUNTAJE_GANAR_2 = 3000
+PUNTAJE_GANAR_3 = 4500
 ENEMIGOS_A_MATAR = 8
 UBICACION_VIDA = (50, 20)
 UBICACION_PUNTUACION = (200, 20)
@@ -106,7 +108,7 @@ def collision_enemigo_plataformas(enemigo, plataformas):
     for piso in plataformas:
         if enemigo.lados["bottom"].colliderect(piso.lados["top"]):
             enemigo.esta_cayendo = False
-            enemigo.lados["bottom"].top = piso.lados["top"].top + 4
+            # enemigo.lados["bottom"].top = piso.lados["top"].bottom
             if enemigo.rect.right >= piso.rect.right:
                 enemigo.estado = "izquierda"
             elif enemigo.rect.left <= piso.rect.left:
