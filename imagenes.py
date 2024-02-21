@@ -240,9 +240,14 @@ imagenes_boss["atacar"] = [
 
 imagenes_boss["muerte"] = [
     pygame.image.load(r"boss_sprites\sprites_boss_1-removebg-preview.png"),
+    pygame.image.load(r"boss_sprites\sprites_boss_1-removebg-preview.png"),
+    pygame.image.load(r"boss_sprites\sprites_boss_2-removebg-preview.png"),
     pygame.image.load(r"boss_sprites\sprites_boss_2-removebg-preview.png"),
     pygame.image.load(r"boss_sprites\sprites_boss_3-removebg-preview.png"),
+    pygame.image.load(r"boss_sprites\sprites_boss_3-removebg-preview.png"),
     pygame.image.load(r"boss_sprites\sprites_boss_4-removebg-preview.png"),
+    pygame.image.load(r"boss_sprites\sprites_boss_4-removebg-preview.png"),
+    pygame.image.load(r"boss_sprites\sprites_boss_5-removebg-preview.png"),
     pygame.image.load(r"boss_sprites\sprites_boss_5-removebg-preview.png")
 ]
 

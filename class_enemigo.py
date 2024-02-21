@@ -20,7 +20,6 @@ class Enemigo(pygame.sprite.Sprite):
         self.velocidad = SPEED
         #gravedad
         self.gravedad = 1
-        # self.potencia_salto = -10
         self.limite_velocidad_caidad = 10
         self.esta_cayendo = True
         self.desplazamiento_y = 0
@@ -31,7 +30,7 @@ class Enemigo(pygame.sprite.Sprite):
 
         pantalla.blit(self.animaciones[self.estado][self.contador_pasos], self.rect)
         self.contador_pasos += 1
-    
+
     def mover(self):
         if self.estado == "derecha":
             for key in self.lados:   
@@ -56,7 +55,7 @@ class Enemigo(pygame.sprite.Sprite):
         diccionario["top"] = pygame.Rect(self.rect.left, self.rect.top, self.rect.width, 6)
         return diccionario
     
-    def update(self, pantalla): 
+    def actualizar(self, pantalla): 
         match self.estado:
             case "derecha":
                 if not self.esta_cayendo:
@@ -90,7 +89,7 @@ class Enemigo_2(Enemigo):
         super().__init__(image, tamaño, SPEED, animaciones)
         self.estado = "cayendo"
         if ubicacion == None:
-            self.rect.x = random.randint(100, ANCHO)
+            self.rect.x = random.randint(50, 600)
             self.rect.y = random.randint(-100, 400)
         else:
             self.rect.x, self.rect.y = ubicacion
@@ -105,7 +104,7 @@ class Enemigo_2(Enemigo):
     def animar(self, pantalla):
         return super().animar(pantalla)
     
-    def update(self, pantalla):
+    def actualizar(self, pantalla):
         match self.estado:
             case "derecha":
                 if not self.esta_cayendo:
@@ -140,22 +139,33 @@ class Enemigo_2(Enemigo):
 
 
 class Boss(Personaje):
-    def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict) -> None:
-        super().__init__(tamaño, coor, imagen, velocidad, animaciones)
+    import random
+    def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict, vidas) -> None:
+        super().__init__(tamaño, coor, imagen, velocidad, animaciones, vidas)
         self.estado = "quieto"
-    
+        self.probabilidad_defensa = random.randint(0, 2)
+        self.rect_tiro = pygame.rect.Rect((0 ,(self.rect.y + 50)), (ANCHO, 120))
+        self.muerto = False
+        self.vidas = vidas
+
     def animar(self, pantalla):
-        return super().animar_player(pantalla)
+        if self.contador_pasos >= len(self.animaciones[self.estado]):
+            self.contador_pasos = 0
+            if self.estado == "muerte":
+                self.muerto = True
+
+        pantalla.blit(self.animaciones[self.estado][self.contador_pasos], self.rect)
+        self.contador_pasos += 1
     
     def atacar(self):
         self.estado = "atacar"
     
-    def update(self, pantalla):
+    def actualizar(self, pantalla):
         match self.estado:
             case "quieto":
                 if not self.esta_saltando:
                     self.animar(pantalla)
-            case "muerto":
+            case "muerte":
                 if not self.esta_saltando:
                     self.animar(pantalla)
             case "atacar":
@@ -163,8 +173,20 @@ class Boss(Personaje):
                     self.esta_saltando = True
                     self.desplazamiento_y = self.potencia_salto
         self.aplicar_gravedad(pantalla)
+        self.rect_tiro = pygame.rect.Rect((0 ,(self.rect.y + 50)), (ANCHO, 70))
     
     def aplicar_gravedad(self, pantalla):
         return super().aplicar_gravedad(pantalla)
+    
     def get_atacar(self):
         return self.estado == "atacar"
+    
+    def get_muerte(self):
+        return self.muerto
+    
+    def get_defensa(self, numero):
+        if numero is not None and type(numero) == int:
+            return self.probabilidad_defensa == numero
+    
+    def set_muerte(self, bol : bool):
+        self.muerto = bol

@@ -2,7 +2,7 @@ import pygame
 
 
 class Personaje(pygame.sprite.Sprite):
-    def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict) -> None:
+    def __init__(self, tamaño, coor, imagen, velocidad, animaciones: dict, vidas) -> None:
         super().__init__()
         self.image = pygame.image.load(imagen).convert_alpha()
         self.image = pygame.transform.scale(self.image, tamaño)
@@ -20,6 +20,7 @@ class Personaje(pygame.sprite.Sprite):
         self.limite_velocidad_caidad = 14
         self.esta_saltando = True
         self.desplazamiento_y = 0
+        self.vidas = vidas
 
     def obtener_rectangulos(self):
         diccionario = {}
@@ -46,7 +47,7 @@ class Personaje(pygame.sprite.Sprite):
             for lado in self.lados:
                 self.lados[lado].x += self.velocidad * -1
 
-    def update(self, pantalla):
+    def actualizar(self, pantalla):
         match self.estado:
             case "derecha":
                 if not self.esta_saltando:
@@ -77,3 +78,4 @@ class Personaje(pygame.sprite.Sprite):
                 self.lados[lado].y += self.desplazamiento_y
             if self.desplazamiento_y + self.gravedad < self.limite_velocidad_caidad:
                 self.desplazamiento_y += self.gravedad
+

@@ -13,15 +13,8 @@ class Nivel_2(Nivel):
     def __init__(self, fondo_path, plataformas, cajas, puntuacion) -> None:
         super().__init__(fondo_path, plataformas, cajas, puntuacion)
         self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon, (500, 300))
-        self.contador_camaleon = 1
         self.lista_enemigos = [self.enemigo_dispara]
         pygame.mixer.init()
-        self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
-        self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
-        self.sonido_menos_vida = pygame.mixer.Sound("sounds\menos_vida.mp3")
-        self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
-        self.sonido_motosierra = pygame.mixer.Sound(r"sounds\sonido_motosierra.mp3")
-        self.reloj = pygame.time.Clock()
         self.bala_enemigo = None
         self.vida_bala_enemigo = False
         self.trampa = Trampa(r"trampa\Off.png", (30, 30), (200, 170), True, trampa)
@@ -32,14 +25,11 @@ class Nivel_2(Nivel):
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos_cangrejos)
 
-
     def play(self, lista_eventos):
         self.reloj.tick(30)
-
         if self.bandera == False:
             self.cronometro.encender()
             self.bandera = True
-
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.disparos_collisiones()
@@ -109,7 +99,7 @@ class Nivel_2(Nivel):
             for enemigo in self.lista_enemigos: 
                 if enemigo.toco == False and enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = True
-                    self.vidas -= 1
+                    self.player.vidas -= 1
                     self.sonido_muerte.play()
                 elif not enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = False
@@ -122,10 +112,12 @@ class Nivel_2(Nivel):
                     if self.player.rect.x < enemigo.rect.x and self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_izquierda"
                         self.bala_enemigo = Laser(r"Ice Particle.png", enemigo.rect.midleft,10 , False)
+                        self.sonido_disparo.play()
                         self.vida_bala_enemigo = True
                     elif self.vida_bala_enemigo == False:
                         enemigo.estado = "atacar_derecha"
                         self.bala_enemigo = Laser(r"Ice Particle.png", enemigo.rect.midleft,10 , True)
+                        self.sonido_disparo.play()
                         self.vida_bala_enemigo = True
                 else:
                     if enemigo.estado == "atacar_derecha":
@@ -134,7 +126,6 @@ class Nivel_2(Nivel):
                         enemigo.estado = "derecha"
 
         else:
-            self.contador_camaleon += 1
             self.enemigo_dispara = Enemigo_2("camaleon\camaleon_ataque_4.png", (80, 50), 5, camaleon)
             self.lista_enemigos.append(self.enemigo_dispara)
             self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
@@ -143,7 +134,7 @@ class Nivel_2(Nivel):
             for enemigo in self.lista_enemigos_cangrejos: 
                 if enemigo.toco == False and enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = True
-                    self.vidas -= 1
+                    self.player.vidas -= 1
                     self.sonido_muerte.play()
                 elif not enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = False
@@ -163,7 +154,7 @@ class Nivel_2(Nivel):
             self.pantalla.blit(caja.image, caja.rect)
 
         for fruta in self.lista_frutas:
-            fruta.update(self.pantalla)
+            fruta.actualizar(self.pantalla)
 
         if self.rectangulos_prog:
             for enemigo in self.lista_enemigos:
@@ -181,25 +172,25 @@ class Nivel_2(Nivel):
                 pygame.draw.rect(self.pantalla, AZUL, enemigo.rect_tiro, 2)
                 
 
-        self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
+        self.pantalla.blit(self.Fuente.render(f"X{self.player.vidas}", 0, NEGRO), UBICACION_VIDA)
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
-        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.cronometro.mostrar_tiempo())}", 0, BLANCO), UBICACION_TIEMPO)
+        self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.cronometro.mostrar_tiempo())}", 0, NEGRO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
-            enemigo.update(self.pantalla)
+            enemigo.actualizar(self.pantalla)
 
         for enemigo in self.lista_enemigos_cangrejos:
-            enemigo.update(self.pantalla)
+            enemigo.actualizar(self.pantalla)
 
-        self.player.update(self.pantalla)
+        self.player.actualizar(self.pantalla)
         if self.bala_viva:
-            self.laser.update(self.pantalla)
+            self.laser.actualizar(self.pantalla)
 
         if self.vida_bala_enemigo:
-            self.bala_enemigo.update(self.pantalla)
+            self.bala_enemigo.actualizar(self.pantalla)
         
         for trampa in self.trampas:
-            trampa.update(self.pantalla)
+            trampa.actualizar(self.pantalla)
         pygame.display.flip()
 
     def get_puntuacion(self):
@@ -214,27 +205,15 @@ class Nivel_2(Nivel):
     def get_resultado(self):
         return super().get_resultado()
     
-    def set_sonido_activado(self, activado):
-        self.sonidos_activados = activado
-    
     def configuracion_sonidos(self, volumen):
-        if volumen:
-            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() + 0.3)
-            self.sonido_item.set_volume(self.sonido_item.get_volume() + 0.3)
-            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() + 0.3)
-            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() + 0.3)
-        else:
-            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() - 0.3)
-            self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.3)
-            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
-            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
+        return super().configuracion_sonidos(volumen)
     
     def disparos_collisiones(self):
         if self.vida_bala_enemigo:
             if self.bala_enemigo.rect.x < 0 or self.bala_enemigo.rect.x > ANCHO:
                 self.vida_bala_enemigo = False
             if self.bala_enemigo.rect.colliderect(self.player.rect):
-                self.vidas -= 1
+                self.player.vidas -= 1
                 self.vida_bala_enemigo = False
         
         if self.bala_viva: 
@@ -245,7 +224,6 @@ class Nivel_2(Nivel):
                         self.lista_enemigos.remove(enemigo)
                         self.objetos_collision_plataformas.remove(enemigo)
                         self.puntuacion += 300
-                        self.contador_enemigos += 1
                         self.bala_viva = False
             
             if len(self.lista_enemigos_cangrejos) != 0:
@@ -255,7 +233,6 @@ class Nivel_2(Nivel):
                         self.lista_enemigos_cangrejos.remove(enemigo)
                         self.objetos_collision_plataformas.remove(enemigo)
                         self.puntuacion += 100
-                        self.contador_enemigos += 1
                         self.bala_viva = False
         
             if self.laser.rect.x < 0 or self.laser.rect.x >= ANCHO:
@@ -266,7 +243,7 @@ class Nivel_2(Nivel):
             if trampa.toco == False and trampa.rect.colliderect(self.player.rect):
                 self.sonido_muerte.play()
                 trampa.toco = True
-                self.vidas -= 1
+                self.player.vidas -= 1
             elif not trampa.rect.colliderect(self.player.rect):
                 trampa.toco = False
 
@@ -282,7 +259,7 @@ class Nivel_2(Nivel):
         else:
             self.gano = False
 
-        if self.vidas < 1:
+        if self.player.vidas < 1:
             self.fin_juego = True
             self.gano = False
 

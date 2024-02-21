@@ -12,7 +12,7 @@ from textbox import *
 import json
 from based import *
 from cronometro import *
-from main_prueba import Barra
+from class_Barra import Barra
 
 
 class Game():
@@ -24,7 +24,6 @@ class Game():
         self.puntuacion = 0
         self.nivel_seleccionado = None
         self.base_datos = bd
-        self.player = Personaje(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 2, imagenes_player)
         #inicio---------------------------------------------------------------------------
         self.Fuente_user = pygame.font.SysFont("Copperplate Gothic", 50)
         self.Fuente_prueba = pygame.font.SysFont("Algerian", 100)
@@ -38,6 +37,7 @@ class Game():
         self.boton_user = Bottom("BOTONES\start.png", 300, 400, (300, 100))
         self.opcion_seleccionada = None
         self.contenedor_niveles = None
+        self.exit_menu = Bottom("BOTONES\exit_renovado.png", 20, 10, (100, 40))
 
         #menu-----------------------------------------------------------------------------------
         self.play = Bottom("BOTONES\play_renovado.png", 600, 500, (200, 70))
@@ -106,7 +106,6 @@ class Game():
         self.nivel_2_activado = False
         self.nivel_3_activado = False
 
-
     def run(self):
         pygame.init()
         while self.on:
@@ -126,8 +125,8 @@ class Game():
                         self.pausa()
                         self.contenedor_niveles.cronometro.encender()
 
-                    if self.contenedor_niveles.get_reset():
-                        self.reset()
+                    if self.contenedor_niveles.get_reiniciar():
+                        self.reiniciar()
                 elif self.contenedor_niveles.get_resultado():
                     self.gameplay()
                 
@@ -151,15 +150,21 @@ class Game():
             self.manejo_volumen_musica()
             self.pantalla.fill(COLOR_MENU)
             self.pantalla.blit(self.logo_inicio, (200, 50))
-            self.txt_user.draw(self.pantalla, pygame.event.get())
 
-            self.boton_user.draw(pantalla)
-            if self.boton_user.is_clicked() == True:
+            self.txt_user.dibujar(self.pantalla, pygame.event.get())
+            self.boton_user.dibujar(self.pantalla)
+            self.exit_menu.dibujar(self.pantalla)
+            self.resetear_juego.dibujar(pantalla)
+
+            if self.boton_user.se_hace_clic() == True:
                 self.user = self.txt_user.get_text()
                 self.estado_juego = "menu"
+            
+            if self.exit_menu.se_hace_clic() == True:
+                pygame.quit()
+                sys.exit()
 
-            self.resetear_juego.draw(pantalla)
-            if self.resetear_juego.is_clicked() == True:
+            if self.resetear_juego.se_hace_clic() == True:
                 resetear_juego(self.base_datos)
             pygame.display.flip()
 
@@ -168,6 +173,7 @@ class Game():
         self.logo_inicio = pygame.transform.scale(self.logo_inicio, (300, 100))
         self.nivel_seleccionado = None
         self.contenedor_niveles = None
+
         while self.estado_juego == "menu":
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -181,37 +187,36 @@ class Game():
             self.pantalla.blit(self.fondo_seleccion_niveles, (280, 100))
             self.pantalla.blit(self.logo_inicio, (300, 20))
 
-            self.play.draw(self.pantalla)
-            self.exit.draw(self.pantalla)
+            self.play.dibujar(self.pantalla)
+            self.exit.dibujar(self.pantalla)
 
             if self.nivel_1_activado:
-                self.boton_nivel1.draw(self.pantalla)
+                self.boton_nivel1.dibujar(self.pantalla)
             else:
-                self.boton_nivel1_bloqueado.draw(self.pantalla)
+                self.boton_nivel1_bloqueado.dibujar(self.pantalla)
 
             if self.nivel_2_activado:
-                self.boton_nivel2.draw(self.pantalla)
+                self.boton_nivel2.dibujar(self.pantalla)
             else:
-                self.boton_nivel2_bloqueado.draw(self.pantalla)
+                self.boton_nivel2_bloqueado.dibujar(self.pantalla)
 
             if self.nivel_3_activado:
-                self.boton_nivel3.draw(self.pantalla)
+                self.boton_nivel3.dibujar(self.pantalla)
             else:
-                self.boton_nivel3_bloqueado.draw(self.pantalla)
+                self.boton_nivel3_bloqueado.dibujar(self.pantalla)
 
 #-------------------------------------------------------------------------
 
-            if self.boton_nivel1.is_clicked() == True and self.nivel_1_activado:
+            if self.boton_nivel1.se_hace_clic() == True and self.nivel_1_activado:
                 self.nivel_seleccionado = 1
             
-            if self.boton_nivel2.is_clicked() == True and self.nivel_2_activado:
+            if self.boton_nivel2.se_hace_clic() == True and self.nivel_2_activado:
                 self.nivel_seleccionado = 2
 
-            if self.boton_nivel3.is_clicked() == True and self.nivel_3_activado:
+            if self.boton_nivel3.se_hace_clic() == True and self.nivel_3_activado:
                 self.nivel_seleccionado = 3
 
-
-            if self.play.is_clicked() == True and self.nivel_seleccionado is not None:
+            if self.play.se_hace_clic() == True and self.nivel_seleccionado is not None:
                 self.cargar_niveles()
                 self.estado_juego = "jugando"
                 pygame.mixer.music.pause()
@@ -220,7 +225,7 @@ class Game():
                 pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
                 self.contenedor_niveles = self.nivel
             
-            if self.exit.is_clicked() == True:
+            if self.exit.se_hace_clic() == True:
                 pygame.quit()
                 sys.exit()
 
@@ -284,22 +289,23 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                        
+            
             self.pantalla.fill(COLOR_MENU)
             self.pantalla.blit(self.fondo_ranking, (260, 150))
+
             if self.estado_juego == "gano":
                 self.pantalla.blit(self.logo_win, (250, 0))
             elif self.estado_juego == "game_over":
                 self.pantalla.blit(self.logo_game_over, (270, 20))
 
-            self.exit_ranking.draw(self.pantalla)
-            self.boton_menu.draw(self.pantalla)
+            self.exit_ranking.dibujar(self.pantalla)
+            self.boton_menu.dibujar(self.pantalla)
 
-            if self.exit_ranking.is_clicked() == True: 
+            if self.exit_ranking.se_hace_clic() == True: 
                 pygame.quit()
                 sys.exit()
 
-            if self.boton_menu.is_clicked() == True:
+            if self.boton_menu.se_hace_clic() == True:
                 self.estado_juego = "menu"
                 self.puntuacion = 0
                 print("volver_menu")
@@ -307,14 +313,14 @@ class Game():
             if len(lista_ranking) == 1:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
                 self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
-                user_surface.draw(self.pantalla)
+                user_surface.dibujar(self.pantalla)
             elif len(lista_ranking) == 2:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
                 user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
                 self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
                 self.pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
-                user_surface.draw(self.pantalla)
-                user_surface_2.draw(self.pantalla)
+                user_surface.dibujar(self.pantalla)
+                user_surface_2.dibujar(self.pantalla)
             elif len(lista_ranking) == 3:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
                 user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
@@ -322,9 +328,9 @@ class Game():
                 self.pantalla.blit(self.logo_player,  UBICACION_PRIMER_PUESTO_LOGO)
                 self.pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
                 self.pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
-                user_surface.draw(self.pantalla)
-                user_surface_2.draw(self.pantalla)
-                user_surface_3.draw(self.pantalla)
+                user_surface.dibujar(self.pantalla)
+                user_surface_2.dibujar(self.pantalla)
+                user_surface_3.dibujar(self.pantalla)
             else:
                 user_surface = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[0][0]} || {lista_ranking[0][1]}", UBICACION_PRIMER_PUESTO_USER, NEGRO)
                 user_surface_2 = Label(self.Fuente_ranking, NEGRO, f" {lista_ranking[1][0]} || {lista_ranking[1][1]}", UBICACION_SEGUNDO_PUESTO_USER, NEGRO)
@@ -334,19 +340,17 @@ class Game():
                 self.pantalla.blit(self.logo_player, UBICACION_SEGUNDO_PUESTO_LOGO)
                 self.pantalla.blit(self.logo_player, UBICACION_TERCER_PUESTO_LOGO)
                 self.pantalla.blit(self.logo_player, UBICACION_CUARTO_PUESTO_LOGO)
-                user_surface.draw(self.pantalla)
-                user_surface_2.draw(self.pantalla)
-                user_surface_3.draw(self.pantalla)
-                user_surface_4.draw(self.pantalla)
+                user_surface.dibujar(self.pantalla)
+                user_surface_2.dibujar(self.pantalla)
+                user_surface_3.dibujar(self.pantalla)
+                user_surface_4.dibujar(self.pantalla)
 
-            
             pygame.display.flip()
 
-    def reset(self):
+    def reiniciar(self):
         self.cargar_niveles()
         self.contenedor_niveles = self.nivel
         self.estado_juego = "jugando"
-        # self.manejo_musica_por_niveles("sounds\Electronic Fantasy.ogg", "sounds\sonic-sth_OcGsuVMq.mp3", "sounds\ringtones-super-mario-bros.mp3")
 
     def cargar_nivel(self, nivel):
         self.nivel_seleccionado = nivel
@@ -435,31 +439,32 @@ class Game():
             self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, NEGRO), (330, 200))
             self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, NEGRO), (330, 250))
 
-            self.boton_pausa.draw(self.pantalla)
-            self.boton_mas_musica.draw(self.pantalla)
-            self.boton_mas_sonido.draw(self.pantalla)
+            self.boton_pausa.dibujar(self.pantalla)
+            self.boton_mas_musica.dibujar(self.pantalla)
+            self.boton_mas_sonido.dibujar(self.pantalla)
 
-            self.boton_menos_musica.draw(self.pantalla)
-            self.boton_menos_sonido.draw(self.pantalla)
+            self.boton_menos_musica.dibujar(self.pantalla)
+            self.boton_menos_sonido.dibujar(self.pantalla)
 
-            if self.boton_pausa.is_clicked():
+            if self.boton_pausa.se_hace_clic():
                 self.contenedor_niveles.pause = False
 
-            if self.boton_mas_musica.is_clicked() == True:
+            if self.boton_mas_musica.se_hace_clic() == True:
                 self.control_volumen_musica(True)
                 self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, VERDE), (330, 200))
             
-            elif self.boton_menos_musica.is_clicked() == True:
+            elif self.boton_menos_musica.se_hace_clic() == True:
                 self.control_volumen_musica(False)
                 self.pantalla.blit(self.fuente_pause.render("MUSICA", 0, ROJO), (330, 200))
 
-            elif self.boton_mas_sonido.is_clicked() == True:
+            elif self.boton_mas_sonido.se_hace_clic() == True:
                 self.control_volumen_sonido(True)
                 self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, VERDE), (330, 250))
             
-            elif self.boton_menos_sonido.is_clicked() == True:
+            elif self.boton_menos_sonido.se_hace_clic() == True:
                 self.control_volumen_sonido(False)
                 self.pantalla.blit(self.fuente_pause.render("SONIDO", 0, ROJO), (330, 250))
+            
 
             pygame.display.flip()
 
@@ -496,10 +501,7 @@ class Game():
                 self.cronometro_transicion.encender()
                 self.primera_iteracion = True
 
-            print(self.cronometro_transicion.mostrar_tiempo())
-
             self.pantalla.fill(NEGRO)
-            # self.pantalla.blit(self.Fuente_prueba.render(f""" NEXT LEVEL""", 0, VERDE), (100, 20))
             if numero == 1:
                 self.pantalla.blit(self.level_1, (220, 100))
             elif numero == 2:
@@ -512,27 +514,7 @@ class Game():
             if self.cronometro_transicion.termino():
                 self.fin_transicion = True
                 self.estado_juego = "jugando"
-            pygame.display.flip()
-        
-
-    def manejo_musica_por_niveles(self, nivel):
-        
-        if self.nivel == 1:
-            pygame.mixer.music.pause()
-            pygame.mixer.music.load(self.musica_nivel_1)
-            pygame.mixer.music.play(1)
-            pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
-        elif self.nivel == 2:
-            pygame.mixer.music.pause()
-            pygame.mixer.music.load(self.musica_nivel_2)
-            pygame.mixer.music.play(1)
-            pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
-        elif self.nivel == 3:
-            pygame.mixer.music.pause()
-            pygame.mixer.music.load(self.musica_nivel_3)
-            pygame.mixer.music.play(1)
-            pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
-
+            pygame.display.flip()        
 
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))

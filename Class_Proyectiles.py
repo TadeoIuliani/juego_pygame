@@ -17,6 +17,6 @@ class Laser(pygame.sprite.Sprite):
         else:
             self.rect.x -= self.velocidad
 
-    def update(self, pantalla) -> None:
+    def actualizar(self, pantalla) -> None:
         self.mover()
         pantalla.blit(self.image, self.rect)

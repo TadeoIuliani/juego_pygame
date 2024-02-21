@@ -12,7 +12,6 @@ class Item(pygame.sprite.Sprite):
         self.center = self.random_coor()
         self.lados = self.obtener_rectangulos()
         self.estado = "girando"
-        ###
         self.animacion = animacion
         self.tamaño = tamaño
         self.contador_pasos = 0
@@ -29,7 +28,7 @@ class Item(pygame.sprite.Sprite):
         pantalla.blit(self.animacion[self.estado][self.contador_pasos], self.rect)
         self.contador_pasos += 1
 
-    def update(self, pantalla):
+    def actualizar(self, pantalla):
         if self.esta_cayendo:
             self.mover()
         self.animar(pantalla)
@@ -78,7 +77,7 @@ class Bomba(Item):
     def get_explosion(self):
         return self.explosion
     
-    def update(self, pantalla):
+    def actualizar(self, pantalla):
         if self.esta_cayendo:
             self.mover()
         self.animar(pantalla)

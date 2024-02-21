@@ -10,12 +10,12 @@ class Bottom():
         self.toco = False
         self.retorno = False
 
-    def draw(self, pantalla):
+    def dibujar(self, pantalla):
         self.pos = pygame.mouse.get_pos()
         pantalla.blit(self.image, self.rect)
         return self.retorno
     
-    def is_clicked(self):
+    def se_hace_clic(self):
         self.pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(self.pos):
             if pygame.mouse.get_pressed()[0] == 1:

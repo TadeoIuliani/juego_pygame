@@ -35,5 +35,5 @@ class Trampa(Piso):
             pantalla.blit(self.animaciones["on"][self.contador], self.rect)
             self.contador += 1
 
-    def update(self, pantalla) -> None:
+    def actualizar(self, pantalla) -> None:
         self.animar(pantalla)

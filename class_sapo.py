@@ -47,8 +47,7 @@ class Sapo(pygame.sprite.Sprite):
         if not self.esta_saltando:
             self.esta_saltando = True
             self.desplazamiento_y = self.potencia_salto
-        
-        
+
     def obtener_rectangulos(self):
         diccionario = {}
         diccionario["main"] = self.rect
@@ -58,7 +57,7 @@ class Sapo(pygame.sprite.Sprite):
         diccionario["top"] = pygame.Rect(self.rect.left, self.rect.top, self.rect.width, 6)
         return diccionario
     
-    def update(self, pantalla): 
+    def actualizar(self, pantalla): 
         match self.estado:
             case "derecha":
                 if not self.esta_saltando:

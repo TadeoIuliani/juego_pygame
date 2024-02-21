@@ -17,7 +17,7 @@ class Nivel:
         self.pantalla = pygame.display.set_mode((ANCHO, ALTO))
         self.fondo = pygame.image.load(fondo_path) 
         self.fondo = pygame.transform.scale(self.fondo, (ANCHO, ALTO))
-        self.player = Personaje(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player)
+        self.player = Personaje(TAM_CRASH, CENTER, "Crash\Crash Quieto\Crash Style_1 (1).png", 7, imagenes_player, 3)
         self.plataformas = plataformas
         self.cajas = cajas
         self.genearador_cangrejos = GenearadorEnemigos(r"cangrejos\0.png", TAM_CANGRI, 7, imagenes_cangrejos)
@@ -25,7 +25,6 @@ class Nivel:
         self.lista_enemigos = self.genearador_cangrejos.generar_enemigos(Enemigo, 3)
         self.lista_sapos = self.genearador_sapos.generar_enemigos(Sapo, 2)
         self.Fuente = pygame.font.SysFont("Segoe Print", 30)
-        self.vidas = 3
         self.puntuacion = puntuacion
         self.lista_frutas = crear_objetos_random(Item, imagenes_fruta, r"frutitas\0.png", TAM_ITEM, 3)
         self.laser = Laser(r"disparo.png", self.player.rect.bottomright, 15)
@@ -35,34 +34,31 @@ class Nivel:
         self.fin_juego = False
         self.pause = False
         self.reset = False
+
         pygame.mixer.init()
         self.sonido_disparo = pygame.mixer.Sound("sounds\laser.mp3")
         self.sonido_muerte = pygame.mixer.Sound("sounds\menos_vida.mp3")
-        self.sonido_menos_vida = pygame.mixer.Sound("sounds\menos_vida.mp3")
+        self.sonido_menos_vida = pygame.mixer.Sound("sounds\mario-mario-touch-enemy.mp3")
         self.sonido_item = pygame.mixer.Sound(r"sounds\mario-coin.mp3")
+
         self.reloj = pygame.time.Clock()
         self.contador_enemigos = 0
         self.objetos_collision_plataformas = [self.player]
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_sapos)
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         self.bandera = False
-        self.cronometro = Cronometro(15, False, 0)
+        self.cronometro = Cronometro(40, False, 0)
         self.tiempo_pausa = 0
 
     def play(self, lista_eventos):
         self.reloj.tick(30)
-
         if self.bandera == False:
             self.cronometro.encender()
             self.bandera = True
-
         self.leer_inputs(lista_eventos)
         self.collisiones()
         self.disparos_collisiones()
         self.actualizar_estado_juego()
-
-        # print(self.cronometro.mostrar_tiempo())
-
         self.cronometro.actualizar()
         self.actualizar_pantalla()  
 
@@ -125,8 +121,8 @@ class Nivel:
             for enemigo in self.lista_enemigos: 
                 if enemigo.toco == False and enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = True
-                    self.vidas -= 1
-                    self.sonido_muerte.play()
+                    self.player.vidas -= 1
+                    self.sonido_menos_vida.play()
                 elif not enemigo.rect.colliderect(self.player.rect):
                     enemigo.toco = False
                 
@@ -140,8 +136,8 @@ class Nivel:
             for sapo in self.lista_sapos: 
                 if sapo.toco == False and sapo.rect.colliderect(self.player.rect):
                     sapo.toco = True
-                    self.vidas -= 1
-                    self.sonido_muerte.play()
+                    self.player.vidas -= 1
+                    self.sonido_menos_vida.play()
                 elif not sapo.rect.colliderect(self.player.rect):
                     sapo.toco = False
         else:
@@ -156,7 +152,7 @@ class Nivel:
             self.pantalla.blit(caja.image, caja.rect)
 
         for fruta in self.lista_frutas:
-            fruta.update(self.pantalla)
+            fruta.actualizar(self.pantalla)
 
         if self.rectangulos_prog:
             for enemigo in self.lista_enemigos:
@@ -170,20 +166,19 @@ class Nivel:
             for key in self.player.lados:
                 pygame.draw.rect(self.pantalla, AZUL, self.player.lados[key], 2)
 
-        self.pantalla.blit(self.Fuente.render(f"X{self.vidas}", 0, NEGRO), UBICACION_VIDA)
+        self.pantalla.blit(self.Fuente.render(f"X{self.player.vidas}", 0, NEGRO), UBICACION_VIDA)
         self.pantalla.blit(self.Fuente.render(f"Puntos: {self.puntuacion}", 0, NEGRO), UBICACION_PUNTUACION)
         self.pantalla.blit(self.Fuente.render(f"Tiempo: {int(self.cronometro.mostrar_tiempo())}", 0, BLANCO), UBICACION_TIEMPO)
 
         for enemigo in self.lista_enemigos:
-            enemigo.update(self.pantalla)
+            enemigo.actualizar(self.pantalla)
 
-        self.player.update(self.pantalla)
+        self.player.actualizar(self.pantalla)
         if self.bala_viva:
-            self.laser.update(self.pantalla)
+            self.laser.actualizar(self.pantalla)
 
         for sapo in self.lista_sapos:
-            sapo.update(self.pantalla)
-
+            sapo.actualizar(self.pantalla)
         pygame.display.flip()
 
 
@@ -218,29 +213,24 @@ class Nivel:
     def get_puntuacion(self):
         return self.puntuacion
     
-    def get_reset(self):
+    def get_reiniciar(self):
         return self.reset
     
     def get_pausa(self):
         return self.pause
     
-    def get_sonido_activado(self):
-        return self.sonidos_activados
-    
-    def set_sonido_activado(self, activado):
-        self.sonidos_activados = activado
-
     def configuracion_sonidos(self, volumen):
-        if volumen:
-            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() + 0.3)
-            self.sonido_item.set_volume(self.sonido_item.get_volume() + 0.3)
-            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() + 0.3)
-            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() + 0.3)
-        else:
-            self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() - 0.3)
-            self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.3)
-            self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.3)
-            self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.3)
+        if volumen != None:
+            if volumen:
+                self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() + 0.5)
+                self.sonido_item.set_volume(self.sonido_item.get_volume() + 0.5)
+                self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() + 0.5)
+                self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() + 0.5)
+            else:
+                self.sonido_disparo.set_volume(self.sonido_disparo.get_volume() - 0.5)
+                self.sonido_item.set_volume(self.sonido_item.get_volume() - 0.5)
+                self.sonido_muerte.set_volume(self.sonido_muerte.get_volume() - 0.5)
+                self.sonido_menos_vida.set_volume(self.sonido_menos_vida.get_volume() - 0.5)
 
 
     def disparos_collisiones(self):
@@ -278,6 +268,6 @@ class Nivel:
         else:
             self.gano = False
 
-        if self.vidas < 1:
+        if self.player.vidas < 1:
             self.fin_juego = True
             self.gano = False
