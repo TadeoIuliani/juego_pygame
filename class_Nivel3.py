@@ -273,11 +273,6 @@ class Nivel3(Nivel_2):
             else:
                 self.fin_juego = False
 
-            if self.puntuacion > PUNTAJE_GANAR_3:
-                self.gano = True
-            else:
-                self.gano = False
-
             if self.player.vidas < 1:
                 self.fin_juego = True
                 self.gano = False
