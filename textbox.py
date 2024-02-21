@@ -10,7 +10,7 @@ class TextBox():
         self.color_rect = color_rectangulo
         self.maximo = maximo_letras
 
-    def update(self, eventos):
+    def actualizar(self, eventos):
         for event in eventos:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
@@ -19,9 +19,8 @@ class TextBox():
                     if len(self.text) < self.maximo:
                         self.text += event.unicode
 
-
-    def draw(self, pantalla, eventos):
-        self.update(eventos)
+    def dibujar(self, pantalla, eventos):
+        self.actualizar(eventos)
         if len(self.text) != 0:
             pygame.draw.line(pantalla, self.color_rect, self.input_rect.bottomleft, self.input_rect.bottomright)
         palabra_surface = self.fuente.render(self.text.upper(), 0, self.color)
@@ -42,7 +41,7 @@ class Label():
         self.rect = pygame.Rect(rectangulo)
         self.color_rect = color_rectangulo
     
-    def draw(self, pantalla):
+    def dibujar(self, pantalla):
         palabra_surface = self.fuente.render(self.text, 0, self.color)
         self.rect.w = palabra_surface.get_width() + 10
         pygame.draw.rect(pantalla, self.color_rect, self.rect, 1)
