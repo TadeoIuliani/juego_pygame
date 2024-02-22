@@ -206,7 +206,6 @@ class Game():
                 self.boton_nivel3_bloqueado.dibujar(self.pantalla)
 
 #-------------------------------------------------------------------------
-
             if self.boton_nivel1.se_hace_clic() == True and self.nivel_1_activado:
                 self.nivel_seleccionado = 1
             
@@ -219,10 +218,11 @@ class Game():
             if self.play.se_hace_clic() == True and self.nivel_seleccionado is not None:
                 self.cargar_niveles()
                 self.estado_juego = "jugando"
-                pygame.mixer.music.pause()
-                pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
-                pygame.mixer.music.play(1)
-                pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
+                self.manejo_musica()
+                # pygame.mixer.music.pause()
+                # pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
+                # pygame.mixer.music.play(1)
+                # pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
                 self.contenedor_niveles = self.nivel
             
             if self.exit.se_hace_clic() == True:
@@ -485,6 +485,23 @@ class Game():
         elif teclas_presionadas[pygame.K_F4]:
             pygame.mixer.music.set_volume(pygame.mixer.music.get_volume()+ 0.01)
             print("+")
+    def manejo_musica(self):
+        if self.nivel_seleccionado == 1:
+            pygame.mixer.music.pause()
+            pygame.mixer.music.load("sounds\Electronic Fantasy.ogg")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
+        elif self.nivel_seleccionado == 2:
+            pygame.mixer.music.pause()
+            pygame.mixer.music.load("sounds\sonic-sth_OcGsuVMq.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
+        elif self.nivel_seleccionado == 3:
+            pygame.mixer.music.pause()
+            pygame.mixer.music.load(r"sounds\ringtones-super-mario-bros.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(VOL_PREDETERMINADO)
+
 
     def escena_trancision(self, numero):
         self.fin_transicion = False

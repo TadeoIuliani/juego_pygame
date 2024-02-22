@@ -47,7 +47,7 @@ class Nivel:
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_sapos)
         self.objetos_collision_plataformas = agregar_lista_a_lista(self.objetos_collision_plataformas, self.lista_enemigos)
         self.bandera = False
-        self.cronometro = Cronometro(40, False, 0)
+        self.cronometro = Cronometro(20, False, 0)
         self.tiempo_pausa = 0
 
     def play(self, lista_eventos):
