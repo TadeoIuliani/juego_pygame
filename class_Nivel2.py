@@ -223,7 +223,7 @@ class Nivel_2(Nivel):
                         self.sonido_muerte.play()
                         self.lista_enemigos.remove(enemigo)
                         self.objetos_collision_plataformas.remove(enemigo)
-                        self.puntuacion += 300
+                        self.puntuacion += PUNTAJE_ENEMIGOS_DISPARAN
                         self.bala_viva = False
             
             if len(self.lista_enemigos_cangrejos) != 0:
@@ -232,7 +232,7 @@ class Nivel_2(Nivel):
                         self.sonido_muerte.play()
                         self.lista_enemigos_cangrejos.remove(enemigo)
                         self.objetos_collision_plataformas.remove(enemigo)
-                        self.puntuacion += 100
+                        self.puntuacion += PUNTAJE_ENEMIGOS
                         self.bala_viva = False
         
             if self.laser.rect.x < 0 or self.laser.rect.x >= ANCHO:
